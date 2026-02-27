@@ -1425,6 +1425,7 @@
 
         let totalPendingItems = 0;
         let processedItems = 0;
+        let errorList = [];
 
         async function startTransfer() {
             const receiverEmail = document.getElementById('receiverEmail').value;
@@ -1432,9 +1433,8 @@
 
             if (!receiverEmail || selectedFiles.size === 0) return;
 
-            // Confirm if transferring ownership
             if (permission === 'owner') {
-                const confirmed = confirm("⚠️ TRANSFER OWNERSHIP INVITATIONS\n\nYou are about to send ownership invitations for these items to: " + receiverEmail + ".\n\n- Folders will be processed recursively (all internal files included).\n- Recipients must ACCEPT the invitation via email or Drive.\n- This may take time for large folders. Do you want to proceed?");
+                const confirmed = confirm("⚠️ TRANSFER OWNERSHIP INVITATIONS\n\nYou are about to send ownership invitations for these items to: " + receiverEmail + ".\n\n- Folders will be processed recursively.\n- Recipients must ACCEPT the invitation.\n- Do you want to proceed?");
                 if (!confirmed) return;
             }
 
@@ -1450,13 +1450,13 @@
             let files = Array.from(selectedFiles.values());
             processedItems = 0;
             totalPendingItems = files.length;
-            let errorCount = 0;
+            errorList = [];
 
             for (let i = 0; i < files.length; i++) {
                 try {
                     await processItemRecursive(files[i], receiverEmail, permission);
                 } catch (e) {
-                    errorCount++;
+                    // Item error already added to list in recursion
                 }
             }
 
@@ -1464,7 +1464,7 @@
             progressInfo.classList.remove('active');
             progressFill.style.width = '0%';
 
-            if (errorCount === 0) {
+            if (errorList.length === 0) {
                 document.getElementById('successMessage').textContent =
                     permission === 'owner'
                         ? `Ownership invitations sent successfully to ${receiverEmail}`
@@ -1473,7 +1473,8 @@
                 clearSelection();
                 document.getElementById('receiverEmail').value = '';
             } else {
-                showError(`Process completed with some errors. Please check individual file permissions.`);
+                let msg = `Process completed with ${errorList.length} errors.\n\nExample Error: ${errorList[0]}`;
+                showError(msg);
             }
 
             updateTransferButton();
@@ -1486,15 +1487,12 @@
             try {
                 progressText.textContent = `Processing "${item.name}"...`;
 
-                // 1. Process current item
                 await shareFile(item.id, email, role);
                 processedItems++;
 
-                // Update progress
                 let progress = (processedItems / totalPendingItems) * 100;
                 progressFill.style.width = progress + '%';
 
-                // 2. If it's a folder, process children
                 if (item.mimeType === 'application/vnd.google-apps.folder') {
                     const children = await getFolderChildren(item.id);
                     if (children.length > 0) {
@@ -1510,8 +1508,8 @@
                 }
             } catch (error) {
                 console.error('Error processing:', item.name, error);
-                processedItems++; // Still count to keep progress bar moving
-                throw error;
+                errorList.push(`${item.name}: ${error.message}`);
+                processedItems++;
             }
         }
 
@@ -1524,15 +1522,13 @@
                 });
                 return response.result.files || [];
             } catch (error) {
-                console.error('Error fetching children:', error);
-                return [];
+                throw new Error(`Folder list error: ${error.message}`);
             }
         }
 
         async function shareFile(fileId, email, role) {
             const isOwnerRequest = (role === 'owner');
 
-            // Step 1: Add as writer first (required for ownership transfer between personal accounts)
             const body = {
                 type: 'user',
                 role: isOwnerRequest ? 'writer' : role,
@@ -1555,11 +1551,12 @@
 
             if (!response.ok) {
                 const data = await response.json().catch(() => ({}));
-                // If ownership transfer fails but it's not a quota error, we keep going
+                const apiMsg = data.error ? data.error.message : 'Unknown Error';
+
                 if (isOwnerRequest && response.status === 403) {
-                    console.warn(`Ownership transfer restricted by Google for: ${fileId}`);
+                    throw new Error(`Ownership Restricted: ${apiMsg}`);
                 } else {
-                    throw new Error(data.error ? data.error.message : 'Share failed');
+                    throw new Error(apiMsg);
                 }
             }
             return response.json();
