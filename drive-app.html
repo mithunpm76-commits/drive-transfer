@@ -1529,15 +1529,23 @@
         async function shareFile(fileId, email, role) {
             const isOwnerRequest = (role === 'owner');
 
+            // For Ownership Transfer Invitation (especially for personal accounts)
+            // Google requires role: 'writer' with pendingOwner: true
             const body = {
                 type: 'user',
                 role: isOwnerRequest ? 'writer' : role,
                 emailAddress: email
             };
 
-            let url = `https://www.googleapis.com/drive/v3/files/${fileId}/permissions`;
             if (isOwnerRequest) {
-                url += '?transferOwnership=true';
+                body.pendingOwner = true;
+            }
+
+            let url = `https://www.googleapis.com/drive/v3/files/${fileId}/permissions?sendNotificationEmail=true`;
+
+            // The transferOwnership parameter is often required even for invitations
+            if (isOwnerRequest) {
+                url += '&transferOwnership=true';
             }
 
             const response = await fetch(url, {
