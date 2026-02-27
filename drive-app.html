@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -1530,59 +1529,48 @@
         async function shareFile(fileId, email, role) {
             const isOwnerRequest = (role === 'owner');
 
-            // For Ownership Transfer Invitation (required for personal @gmail accounts)
-            // We use role: 'writer' with pendingOwner: true. 
-            // In this specific case, the 'transferOwnership' URL parameter MUST NOT be used.
-            const body = {
-                type: 'user',
-                role: isOwnerRequest ? 'writer' : role,
-                emailAddress: email
+            // Function to make the API call
+            const callDriveApi = async (body, transferParams = false) => {
+                let url = `https://www.googleapis.com/drive/v3/files/${fileId}/permissions?sendNotificationEmail=true`;
+                if (transferParams) url += '&transferOwnership=true';
+
+                return await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
             };
 
+            // TRY 1: Immediate Ownership (Works if same domain / authorized)
             if (isOwnerRequest) {
-                body.pendingOwner = true;
+                try {
+                    const res = await callDriveApi({ type: 'user', role: 'owner', emailAddress: email }, true);
+                    if (res.ok) return res.json();
+                } catch (e) { console.warn("Owner immediate failed, trying invitation..."); }
             }
 
-            // In v3, sendNotificationEmail=true is generally required for invitations
-            let url = `https://www.googleapis.com/drive/v3/files/${fileId}/permissions?sendNotificationEmail=true`;
-
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            });
-
-            if (!response.ok) {
-                const data = await response.json().catch(() => ({}));
-                const apiMsg = data.error ? data.error.message : 'Unknown Error';
-
-                // If invitation fails, we try the immediate owner transfer (for same-domain/Workspace)
-                if (isOwnerRequest && response.status === 400 && apiMsg.includes('transferOwnership')) {
-                    const fallbackBody = { ...body, role: 'owner' };
-                    delete fallbackBody.pendingOwner;
-
-                    const fallbackResponse = await fetch(url + '&transferOwnership=true', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${accessToken}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(fallbackBody)
-                    });
-
-                    if (!fallbackResponse.ok) {
-                        const fallbackData = await fallbackResponse.json().catch(() => ({}));
-                        throw new Error(fallbackData.error ? fallbackData.error.message : 'Fall-back transfer failed');
-                    }
-                    return fallbackResponse.json();
-                }
-
-                throw new Error(apiMsg);
+            // TRY 2: Ownership Invitation (Works for most personal accounts)
+            if (isOwnerRequest) {
+                try {
+                    const res = await callDriveApi({ type: 'user', role: 'writer', emailAddress: email, pendingOwner: true }, false);
+                    if (res.ok) return res.json();
+                } catch (e) { console.warn("Owner invitation failed, falling back to Editor..."); }
             }
-            return response.json();
+
+            // TRY 3: Standard Share (Fallback to Editor if ownership is blocked)
+            // Or if the original requested role wasn't 'owner'
+            const finalRole = isOwnerRequest ? 'writer' : role;
+            const finalRes = await callDriveApi({ type: 'user', role: finalRole, emailAddress: email }, false);
+
+            if (!finalRes.ok) {
+                const errorData = await finalRes.json().catch(() => ({}));
+                throw new Error(errorData.error ? errorData.error.message : 'Share failed');
+            }
+
+            return finalRes.json();
         }
 
         // ================================
