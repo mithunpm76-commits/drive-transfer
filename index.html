@@ -11,18 +11,48 @@
         body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; color: #fff; overflow-x: hidden; }
         .login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .login-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 28px; padding: 50px 40px; width: 100%; max-width: 420px; text-align: center; }
-        .login-logo { width: 80px; height: 80px; background: linear-gradient(135deg, #4285f4, #34a853); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
+        .login-logo { width: 80px; height: 80px; background: linear-gradient(135deg, #4285f4, #34a853); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; box-shadow: 0 0 30px rgba(66, 133, 244, 0.3); }
         .login-logo i { font-size: 34px; color: white; }
-        .google-btn { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 16px; background: white; border: none; border-radius: 12px; font-weight: 600; color: #374151; cursor: pointer; }
+        .google-btn { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 16px; background: white; border: none; border-radius: 12px; font-weight: 600; color: #374151; cursor: pointer; transition: 0.3s; }
+        .google-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
         .app-page { display: none; padding: 20px; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .app-content { display: grid; grid-template-columns: 1fr 350px; gap: 24px; max-width: 1200px; margin: 0 auto; }
         .file-box { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); }
-        .file-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; border-radius: 8px; }
+        .file-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; border-radius: 8px; }
+        .file-item:hover { background: rgba(255,255,255,0.1); }
         .file-item.selected { background: rgba(66, 133, 244, 0.2); border-left: 4px solid #4285f4; }
         .transfer-panel { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 24px; border: 1px solid rgba(255,255,255,0.1); height: fit-content; }
         .input-field { width: 100%; padding: 14px; margin-top: 10px; margin-bottom: 20px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; }
-        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-top: 20px; }
+        .progress-container { margin-top: 20px; display: none; }
+        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
         .progress-fill { height: 100%; background: #34a853; width: 0%; transition: 0.3s; }
+        .loading-spinner { border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; margin-left: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading .loading-spinner { display: inline-block; }
+    </style>
+</head>
+        .login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 28px; padding: 50px 40px; width: 100%; max-width: 420px; text-align: center; }
+        .login-logo { width: 80px; height: 80px; background: linear-gradient(135deg, #4285f4, #34a853); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; box-shadow: 0 0 30px rgba(66, 133, 244, 0.3); }
+        .login-logo i { font-size: 34px; color: white; }
+        .google-btn { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 16px; background: white; border: none; border-radius: 12px; font-weight: 600; color: #374151; cursor: pointer; transition: 0.3s; }
+        .google-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .app-page { display: none; padding: 20px; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .app-content { display: grid; grid-template-columns: 1fr 350px; gap: 24px; max-width: 1200px; margin: 0 auto; }
+        .file-box { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .file-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; border-radius: 8px; }
+        .file-item:hover { background: rgba(255,255,255,0.1); }
+        .file-item.selected { background: rgba(66, 133, 244, 0.2); border-left: 4px solid #4285f4; }
+        .transfer-panel { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 24px; border: 1px solid rgba(255,255,255,0.1); height: fit-content; }
+        .input-field { width: 100%; padding: 14px; margin-top: 10px; margin-bottom: 20px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; }
+        .progress-container { margin-top: 20px; display: none; }
+        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #34a853; width: 0%; transition: 0.3s; }
+        .loading-spinner { border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; margin-left: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading .loading-spinner { display: inline-block; }
     </style>
 </head>
 <body>
@@ -30,21 +60,35 @@
         <div class='login-card'>
             <div class='login-logo'><i class='fab fa-google-drive'></i></div>
             <h2>Drive Transfer</h2>
-            <p>Recursive ownership transfer tool</p><br>
+            <p style='color: rgba(255,255,255,0.6); margin-bottom: 30px;'>Recursive ownership transfer tool</p>
             <button class='google-btn' onclick='handleAuth()'>
                 <img src='https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg' style='width: 20px;'>
                 Continue with Google
             </button>
         </div>
-    </div>    <div id='appPage' class='app-page'>
+    </div>
+
+    <div id='appPage' class='app-page'>
+        <div class='app-header'>
+            <h2>My Files</h2>
+            <button onclick='location.reload()' style='background: none; border: 1px solid #444; color: #fff; padding: 5px 15px; border-radius: 5px; cursor: pointer;'>Refresh</button>
+        </div>
         <div class='app-content'>
-            <div class='file-box'><div id='fileContainer'>Loading...</div></div>
+            <div class='file-box'>
+                <div id='fileContainer'>Loading...</div>
+            </div>
             <div class='transfer-panel'>
-                <h3>Transfer</h3>
+                <h3>Transfer Options</h3>
+                <p style='font-size: 12px; color: #aaa; margin: 10px 0;'>Target Email:</p>
                 <input type='email' id='targetEmail' class='input-field' placeholder='receiver@gmail.com'>
-                <button id='startBtn' onclick='startTransfer()' class='google-btn' style='background: #34a853; color: white;'>Start Transfer</button>
-                <div class='progress-bar'><div id='progressFill' class='progress-fill'></div></div>
-                <p id='progressText' style='font-size: 12px; margin-top: 8px; text-align: center;'></p>
+                <button id='startBtn' onclick='startTransfer()' class='google-btn' style='background: #34a853; color: white;'>
+                    <span>Start Deep Transfer</span>
+                    <div class='loading-spinner'></div>
+                </button>
+                <div id='progressBox' class='progress-container'>
+                    <div class='progress-bar'><div id='progressFill' class='progress-fill'></div></div>
+                    <p id='progressText' style='font-size: 12px; margin-top: 8px; text-align: center;'>Processing...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -55,13 +99,32 @@
         const API_KEY = 'AIzaSyDdtnIAiIQq1yvKfo3ven2oAxkrikrJ9pY';
         const SCOPES = 'https://www.googleapis.com/auth/drive';
         let tokenClient, accessToken, selectedFiles = new Set();
-        function handleAuth() { tokenClient.callback = (r) => { accessToken = r.access_token; document.getElementById('loginPage').style.display='none'; document.getElementById('appPage').style.display='block'; fetchFiles(); }; tokenClient.requestAccessToken({ prompt: 'consent' }); }
-        async function fetchFiles() { const r = await gapi.client.drive.files.list({ q: '"root" in parents and trashed = false', fields: 'files(id, name, mimeType)' }); window.allFiles = r.result.files; renderFiles(window.allFiles); }
-        function renderFiles(files) { document.getElementById('fileContainer').innerHTML = files.map(f => `<div class='file-item' onclick='selectFile("${f.id}", this)'><i class='fas ${f.mimeType === "application/vnd.google-apps.folder" ? "fa-folder" : "fa-file"}'></i> ${f.name}</div>`).join(''); }
-        function selectFile(id, el) { if(selectedFiles.has(id)) { selectedFiles.delete(id); el.classList.remove('selected'); } else { selectedFiles.add(id); el.classList.add('selected'); } }
+
+        function handleAuth() {
+            tokenClient.callback = (r) => { accessToken = r.access_token; document.getElementById('loginPage').style.display='none'; document.getElementById('appPage').style.display='block'; fetchFiles(); };
+            tokenClient.requestAccessToken({ prompt: 'consent' });
+        }
+
+        async function fetchFiles() {
+            const r = await gapi.client.drive.files.list({ q: '\"root\" in parents and trashed = false', fields: 'files(id, name, mimeType)' });
+            window.allFiles = r.result.files;
+            renderFiles(window.allFiles);
+        }
+
+        function renderFiles(files) {
+            const container = document.getElementById('fileContainer');
+            container.innerHTML = files.map(f => `<div class='file-item' onclick='selectFile(\"${f.id}\", this)'><i class='fas ${'${'}f.mimeType === \"application/vnd.google-apps.folder\" ? \"fa-folder\" : \"fa-file\"${'}'}'></i> ${'${'}f.name${'}'}</div>`).join('');
+        }
+
+        function selectFile(id, el) {
+            if(selectedFiles.has(id)) { selectedFiles.delete(id); el.classList.remove('selected'); } else { selectedFiles.add(id); el.classList.add('selected'); }
+        }
+
         async function startTransfer() {
             const email = document.getElementById('targetEmail').value;
             if(!email || selectedFiles.size === 0) return alert('Select files and enter email');
+            document.getElementById('startBtn').classList.add('loading');
+            document.getElementById('progressBox').style.display='block';
             let processed = 0, total = selectedFiles.size;
             for(let id of selectedFiles) {
                 const f = window.allFiles.find(x => x.id === id);
@@ -69,21 +132,40 @@
                 processed++;
                 document.getElementById('progressFill').style.width = (processed / total * 100) + '%';
             }
-            alert('Transfer complete!');
+            alert('Invitations sent! Please tell the receiver to check their email and ACCEPT the ownership transfer.');
+            location.reload();
         }
+
         async function processRecursive(id, name, mime, email) {
             document.getElementById('progressText').innerText = 'Processing: ' + name;
-            await gapi.client.drive.permissions.create({ fileId: id, sendNotificationEmail: true, resource: { type: 'user', role: 'writer', emailAddress: email } });
-            await fetch(`https://www.googleapis.com/drive/v3/files/${id}/permissions?sendNotificationEmail=true`, {
-                method: 'POST', headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type: 'user', role: 'writer', emailAddress: email, pendingOwner: true })
-            });
+            
+            // 1. Add as Editor (Writer) first - Necessary step
+            try {
+                await fetch(`https://www.googleapis.com/drive/v3/files/${'${'}id${'}'}/permissions?sendNotificationEmail=true`, {
+                    method: 'POST', headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'user', role: 'writer', emailAddress: email })
+                });
+            } catch(e) { console.error('Share failed', e); }
+
+            // 2. Try Ownership Invitation
+            try {
+                // Secondary method for personal accounts: pendingOwner invitation
+                await fetch(`https://www.googleapis.com/drive/v3/files/${'${'}id${'}'}/permissions?sendNotificationEmail=true`, {
+                    method: 'POST', headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'user', role: 'writer', emailAddress: email, pendingOwner: true })
+                });
+            } catch(e) { console.error('Ownership invite failed', e); }
+
             if(mime === 'application/vnd.google-apps.folder') {
-                const r = await gapi.client.drive.files.list({ q: `"${id}" in parents and trashed = false`, fields: 'files(id, name, mimeType)' });
+                const r = await gapi.client.drive.files.list({ q: `\"${'${'}id${'}'}\" in parents and trashed = false`, fields: 'files(id, name, mimeType)' });
                 for(let child of r.result.files) { await processRecursive(child.id, child.name, child.mimeType, email); }
             }
         }
-        window.onload = () => { gapi.load('client', () => gapi.client.init({ apiKey: API_KEY, discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'] })); tokenClient = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES }); };
+
+        window.onload = () => {
+            gapi.load('client', () => gapi.client.init({ apiKey: API_KEY, discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'] }));
+            tokenClient = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES });
+        };
     </script>
 </body>
 </html>
