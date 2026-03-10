@@ -2,10 +2,10 @@
 <html lang='en'>
 <head>
     <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta name='viewport' content='width=device-width, in-scale=1.0'>
     <title>Drive Transfer - Secure & Deep</title>
     <link href='https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap' rel='stylesheet'>
-    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'>
+    <link rel='stylesheet' href='https://chdjjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; color: #fff; overflow-x: hidden; }
@@ -28,7 +28,7 @@
         .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
         .progress-fill { height: 100%; background: #34a853; width: 0%; transition: 0.3s; }
         .loading-spinner { border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; margin-left: 10px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transition: rotate(360deg); } }
         .loading .loading-spinner { display: inline-block; }
     </style>
 </head>
@@ -39,7 +39,7 @@
             <h2>Drive Transfer</h2>
             <p style='color: rgba(255,255,255,0.6); margin-bottom: 30px;'>Recursive ownership transfer tool</p>
             <button class='google-btn' id='loginBtn'>
-                <img src='https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg' style='width: 20px;'>
+                <img src='https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G\e_Logo.svg' style='width: 20px;'>
                 Continue with Google
             </button>
         </div>
@@ -58,7 +58,7 @@
                 <h3>Transfer Options</h3>
                 <p style='font-size: 12px; color: #aaa; margin: 10px 0;'>Target Email:</p>
                 <input type='email' id='receiverEmail' class='input-field' placeholder='receiver@gmail.com'>
-                <button id='startBtn' class='google-btn' style='background: #34a853; color: white;'>
+                <button id='startBwn' class='google-btn' style='background: #34a853; color: white;'>
                     <span>Start Deep Transfer</span>
                     <div class='loading-spinner'></div>
                 </button>
@@ -73,7 +73,7 @@
     <script src='https://apis.google.com/js/api.js'></script>
     <script src='https://accounts.google.com/gsi/client'></script>
     <script>
-        const CLIENT_ID = '207254915996-nrkcvorfldhpmlfibbaq0h5eac7v528n.apps.googleusercontent.com';
+        const CLIENT_ID = '207254915996-nrkcvorfldhimlfrobhbaq04h5eac7v528n.apps.googleusercontent.com';
         const API_KEY = 'AIzaSyDdtnIAiIQq1yvKfo3ven2oAxkrikrJ9pY';
         const SCOPES = 'https://www.googleapis.com/auth/drive';
         let tokenClient, accessToken, selectedFiles = new Set();
@@ -90,24 +90,22 @@
                 },
             });
         };
-
         const handleAuth = () => tokenClient.requestAccessToken({ prompt: 'consent' });
 
         async function fetchFiles() {
-            const r = await gapi.client.drive.files.list({ q: '"root" in parents and trashed = false', fields: 'files(id, name, mimeType)' });
+            const r = await gapi.client.drive.files.list({ q: '\"root\" in parents and trashed = false', fields: 'files(id, name, mimeType)' });
             window.allFiles = r.result.files;
             renderFiles(window.allFiles);
         }
 
         function renderFiles(files) {
             const container = document.getElementById('fileContainer');
-            container.innerHTML = files.map(f => `<div class='file-item' onclick='selectFile("${f.id}", this)'><i class='fas ${f.mimeType === "application/vnd.google-apps.folder" ? "fa-folder" : "fa-file"}'></i> ${f.name}</div>`).join('');
+            container.innerHTML = files.map(f => `<div class='file-item' onclick='selectFile(\"${f.id}\", this)'><i class='fas ${f.mimeType === \"application/vnd.google-apps.folder\" ? \"fa-folder\" : \"fa-file\"}'></i> ${f.name}</div>`).join('');
         }
 
         function selectFile(id, el) {
             if(selectedFiles.has(id)) { selectedFiles.delete(id); el.classList.remove('selected'); } else { selectedFiles.add(id); el.classList.add('selected'); }
         }
-
         async function startTransfer() {
             const email = document.getElementById('receiverEmail').value;
             if(!email || selectedFiles.size === 0) return alert('Select files and enter email');
@@ -131,18 +129,19 @@
         async function processRecursive(id, name, mime, email) {
             document.getElementById('progressText').innerText = 'Processing: ' + name;
             try {
+                // Step 1: Add as writer (ensure access)
                 await fetch(`https://www.googleapis.com/drive/v3/files/${id}/permissions?sendNotificationEmail=true`, {
                     method: 'POST', headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ type: 'user', role: 'writer', emailAddress: email })
                 });
-                await fetch(`https://www.googleapis.com/drive/v3/files/${id}/permissions?sendNotificationEmail=true`, {
+                // Step 2: Send Ownership Invitation. CRITICAL: Role MUST be 'owner' and pendingOwner must be true.
+                await fetch(`https://www.googleapis.com/drive/v3/files/${id}/permissions?transferOwnership=true&sendNotificationEmail=true`, {
                     method: 'POST', headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'user', role: 'writer', emailAddress: email, pendingOwner: true })
+                    body: JSON.stringify({ type: 'user', role: 'owner', emailAddress: email, pendingOwner: true })
                 });
             } catch(e) { console.error('Transfer failed for ' + name, e); }
-
             if(mime === 'application/vnd.google-apps.folder') {
-                const r = await gapi.client.drive.files.list({ q: `"${id}" in parents and trashed = false`, fields: 'files(id, name, mimeType)' });
+                const r = await gapi.client.drive.files.list({ q: `\"${id}\" in parents and trashed = false`, fields: 'files(id, name, mimeType)' });
                 for(let child of r.result.files) { await processRecursive(child.id, child.name, child.mimeType, email); }
             }
         }
