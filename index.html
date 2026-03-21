@@ -1,245 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drive Transfer - Secure & Deep</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            min-height: 100vh;
-            color: #fff;
-            overflow-x: hidden;
-        }
-        .login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 28px;
-            padding: 50px 40px;
-            width: 100%;
-            max-width: 420px;
-            text-align: center;
-        }
-        .login-logo {
-            width: 80px; height: 80px;
-            background: linear-gradient(135deg, #4285f4, #34a853);
-            border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 24px;
-            box-shadow: 0 0 30px rgba(66, 133, 244, 0.3);
-        }
-        .login-logo i { font-size: 34px; color: white; }
-        .login-card h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
-        .login-card p { color: rgba(255, 255, 255, 0.6); font-size: 0.95rem; margin-bottom: 36px; }
-        .google-btn {
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            width: 100%; padding: 16px; background: white; border: none; border-radius: 12px;
-            font-weight: 600; color: #374151; cursor: pointer; transition: 0.3s;
-        }
-        .google-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
-        .app-page { display: none; padding: 20px; }
-        .app-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 30px; max-width: 1200px; margin-left: auto; margin-right: auto;
-        }
-        .app-content { display: grid; grid-template-columns: 1fr 350px; gap: 24px; max-width: 1200px; margin: 0 auto; }
-        .file-box { background: rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.1); }
-        .file-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); cursor: pointer; transition: 0.2s; border-radius: 8px; }
-        .file-item:hover { background: rgba(255, 255, 255, 0.1); }
-        .file-item.selected { background: rgba(66, 133, 244, 0.2); border-left: 4px solid #4285f4; }
-        .transfer-panel { background: rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.1); height: fit-content; }
-        .input-field {
-            width: 100%; padding: 14px; background: rgba(255, 255, 255, 0.1); border: none; border-radius: 10px;
-            color: white; margin-top: 10px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .input-field:focus { outline: none; background: rgba(255, 255, 255, 0.15); border-color: #4285f4; }
-        .transfer-btn { background: #4285f4; color: white; width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .transfer-btn:hover:not(:disabled) { background: #357ae8; box-shadow: 0 10px 20px rgba(66, 133, 244, 0.3); }
-        .transfer-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .progress-container { margin-top: 20px; display: none; }
-        .progress-bar { height: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; background: #34a853; width: 0%; transition: 0.3s; }
-        .loading-spinner { border: 3px solid rgba(255, 255, 255, 0.3); border-top: 3px solid #fff; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; margin-left: 10px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading .loading-spinner { display: inline-block; }
-    </style>
-</head>
-
+    <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Drive Transfer</title>
+    </head>
 <body>
-    <div id="loginPage" class="login-page">
-        <div class="login-card">
-            <div class="login-logo"><i class="fab fa-google-drive"></i></div>
-            <h2>Drive Transfer</h2>
-            <p>Recursive ownership transfer tool</p>
-            <button class="google-btn" onclick="handleAuth()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" style="width: 20px;" alt="G">
-                Continue with Google
-            </button>
-        </div>
-    </div>
-
-    <div id="appPage" class="app-page">
-        <div class="app-header">
-            <div>
-                <h1 style="font-size: 24px; font-weight: 700;">Drive Transfer</h1>
-                <p style="color: rgba(255,255,255,0.6);" id="userEmail">Authenticated Session</p>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="google-btn" style="width: auto; padding: 10px 20px;" onclick="window.location.reload()">Logout</button>
-            </div>
-        </div>
-
-        <div class="app-content">
-            <div class="file-box">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h3 style="font-size: 18px;">Storage Files</h3>
-                    <div style="font-size: 14px; color:rgba(255,255,255,0.6);" id="selectedCount">0 selected</div>
-                </div>
-                <div id="fileList">
-                    <div style="text-align: center; padding: 30px;"><i class="fas fa-spinner fa-spin" style="font-size: 30px;"></i></div>
-                </div>
-            </div>
-
-            <div class="transfer-panel">
-                <h3 style="margin-bottom: 10px;">Transfer Settings</h3>
-                <label style="font-size: 14px; color: rgba(255,255,255,0.7);">Receiver's Email (within workspace)</label>
-                <input type="email" id="receiverEmail" class="input-field" placeholder="example@gmail.com">
-                <div style="margin-bottom: 20px;">
-                    <p style="font-size: 14px; margin-bottom: 8px;">Transfer Mode</p>
-                    <select id="transferMode" class="input-field" style="margin-top: 0;">
-                        <option value="transfer">Ownership Transfer</option>
-                        <option value="share">Edit Access only</option>
-                    </select>
-                </div>
-                <div id="confirmArea" style="display: none; padding: 15px; background: rgba(234, 67, 53, 0.1); border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(234, 67, 53, 0.2);">
-                    <p style="font-size: 13px; color: #ff8a80;">⚠️ This will recursively transfer all selected files and subfolders.</p>
-                </div>
-                <button id="transferBtn" class="transfer-btn" onclick="initiateTransfer()" disabled>Start Transfer</button>
-                <div id="progressContainer" class="progress-container">
-                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                        <span id="progressText">Processing...</span>
-                        <span id="progressPercent">0%</span>
-                    </div>
-                    <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script>
-        const CLIENT_ID = '316518188310-ope33gher5kase39qfnqpca4tc3p5cta.apps.googleusercontent.com';
-        const SCOPES = 'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.metadata';
-        let selectedFiles = new Set();
-        let allRootFiles = [];
-        let accessToken = null;
-
-        const handleAuth = () => {
-            const client = google.accounts.oauth2.initTokenClient({
-                client_id: CLIENT_ID,
-                scope: SCOPES,
-                callback: (r) => {
-                    if (r.error) return alert('Auth Error: ' + r.error);
-                    accessToken = r.access_token;
-                    document.getElementById('loginPage').style.display = 'none';
-                    document.getElementById('appPage').style.display = 'block';
-                    fetchFiles();
-                },
-            });
-            client.requestAccessToken();
-        };
-
-        const fetchFiles = async () => {
-            const container = document.getElementById('fileList');
-            try {
-                const response = await fetch('https://www.googleapis.com/drive/v3/files?q="root" in parents and trashed = false', {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
-                const data = await response.json();
-                allRootFiles = data.files || [];
-                if (allRootFiles.length === 0) {
-                    container.innerHTML = '<p style="text-align:center; padding: 20px; color: #aaa;">No files found.</p>';
-                    return;
-                }
-                container.innerHTML = allRootFiles.map(f => {
-                    const icon = f.mimeType === 'application/vnd.google-apps.folder' ? 'fa-folder' : 'fa-file';
-                    return `<div class="file-item" id="file-${f.id}" onclick="toggleSelect('${f.id}')">
-                        <i class="fas ${icon}" style="color: #4285f4; font-size: 20px;"></i>
-                        <span style="flex: 1;">${f.name}</span>
-                    </div>`;
-                }).join('');
-            } catch (err) { container.innerHTML = `<p style="color: #ff8a80;">Error: ${err.message}</p>`; }
-        };
-
-        const toggleSelect = (id) => {
-            const el = document.getElementById(`file-${id}`);
-            if (selectedFiles.has(id)) { selectedFiles.delete(id); el.classList.remove('selected'); }
-            else { selectedFiles.add(id); el.classList.add('selected'); }
-            updateUI();
-        };
-
-        const updateUI = () => {
-            document.getElementById('selectedCount').innerText = `${selectedFiles.size} selected`;
-            const email = document.getElementById('receiverEmail').value.trim();
-            document.getElementById('transferBtn').disabled = !(selectedFiles.size > 0 && email.includes('@'));
-            document.getElementById('confirmArea').style.display = selectedFiles.size > 0 ? 'block' : 'none';
-        };
-
-        document.getElementById('receiverEmail').addEventListener('input', updateUI);
-
-        async function processRecursive(id, name, mime, email, mode) {
-            document.getElementById('progressText').innerText = 'Processing: ' + name;
-            try {
-                await fetch(`https://www.googleapis.com/drive/v3/files/${id}/permissions?sendNotificationEmail=true`, {
-                    method: 'POST',
-                    headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'user', role: 'writer', emailAddress: email })
-                });
-                if (mode === 'transfer') {
-                    await fetch(`https://www.googleapis.com/drive/v3/files/${id}/permissions?transferOwnership=true&sendNotificationEmail=true`, {
-                        method: 'POST',
-                        headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ type: 'user', role: 'owner', emailAddress: email, pendingOwner: true })
-                    });
-                }
-            } catch (e) { console.error(e); }
-            if (mime === 'application/vnd.google-apps.folder') {
-                try {
-                    const response = await fetch(`https://www.googleapis.com/drive/v3/files?q="${id}" in parents and trashed = false`, {
-                        headers: { 'Authorization': `Bearer ${accessToken}` }
-                    });
-                    const data = await response.json();
-                    const children = data.files || [];
-                    for (let child of children) { await processRecursive(child.id, child.name, child.mimeType, email, mode); }
-                } catch (err) { console.error(err); }
-            }
-        }
-
-        const initiateTransfer = async () => {
-            const progress = document.getElementById('progressContainer');
-            const fill = document.getElementById('progressFill');
-            const percent = document.getElementById('progressPercent');
-            const text = document.getElementById('progressText');
-            progress.style.display = 'block';
-            const email = document.getElementById('receiverEmail').value.trim();
-            const mode = document.getElementById('transferMode').value;
-            const ids = Array.from(selectedFiles);
-            for (let i = 0; i < ids.length; i++) {
-                const f = allRootFiles.find(x => x.id === ids[i]);
-                if (f) await processRecursive(f.id, f.name, f.mimeType, email, mode);
-                const p = Math.round(((i + 1) / ids.length) * 100);
-                fill.style.width = `${p}%`; percent.innerText = `${p}%`;
-            }
-            text.innerText = '✅ Transfer Initiated!';
-            alert('Transfer process initiated successfully.');
-        };
-    </script>
+        <div id="loginPage">
+                    <button onclick="handleAuth()">Login with Google</button>button>
+        </div>div>
+        <div id="appPage" style="display:none">
+                    <div id="fileList"></div>div>
+                    <input type="email" id="receiverEmail">
+                    <button onclick="initiateTransfer()">Start Transfer</button>button>
+        </div>div>
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
+        <script>
+                    const CLIENT_ID = '316518188310-ope33gher5kase39qfnqpca4tc3p5cta.apps.googleusercontent.com';
+                    const SCOPES = 'https://www.googleapis.com/auth/drive';
+                    let accessToken = null;
+                    const handleAuth = () => {
+                                    google.accounts.oauth2.initTokenClient({
+                                                        client_id: CLIENT_ID, scope: SCOPES,
+                                                        callback: (r) => { accessToken = r.access_token; document.getElementById('loginPage').style.display='none'; document.getElementById('appPage').style.display='block'; fetchFiles(); }
+                                    }).requestAccessToken();
+                    };
+                    const fetchFiles = async () => {
+                                    const r = await fetch('https://www.googleapis.com/drive/v3/files?q="root" in parents', { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                                    const d = await r.json(); console.log(d);
+                    };
+                    const initiateTransfer = async () => { console.log('Transfer started'); };
+        </script>
 </body>
-</html>
+</html>html>
+
+        </script>
+</body></title>
+    </head>
