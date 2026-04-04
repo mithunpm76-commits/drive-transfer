@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drive Ownership Transfer - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+            min-height: 100vh;
+            color: #e6edf3;
+        }
+
+        /* ---- LOGIN ---- */
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-page.hidden { display: none; }
+
+        .login-card {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 28px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            animation: fadeUp 0.6s ease;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-logo {
+            width: 88px; height: 88px;
+            background: linear-gradient(135deg, #1f6feb, #388bfd);
+            border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: 0 0 40px rgba(56,139,253,0.4);
+            animation: glow 2s ease-in-out infinite;
+        }
+        @keyframes glow {
+            0%,100% { box-shadow: 0 0 30px rgba(56,139,253,0.4); }
+            50%      { box-shadow: 0 0 55px rgba(56,139,253,0.7); }
+        }
+        .login-logo i { font-size: 38px; color: white; }
+
+        .login-card h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+        .login-card > p { color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-bottom: 12px; }
+
+        .admin-badge {
+            display: inline-block;
+            background: linear-gradient(90deg, rgba(56,139,253,0.2), rgba(63,185,80,0.2));
+            border: 1px solid rgba(56,139,253,0.3);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.75rem;
+            color: #58a6ff;
+            margin-bottom: 32px;
+            letter-spacing: 0.5px;
+        }
+
+        .google-btn {
+            display: flex; align-items: center; justify-content: center; gap: 14px;
+            width: 100%; padding: 17px 24px;
+            background: white; border: none; border-radius: 14px;
+            font-family: inherit; font-size: 1rem; font-weight: 600;
+            color: #374151; cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .google-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+        .google-btn img { width: 24px; height: 24px; }
+
+        .login-note {
+            margin-top: 24px;
+            padding: 14px;
+            background: rgba(56,139,253,0.08);
+            border: 1px solid rgba(56,139,253,0.2);
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.5;
+        }
+
+        /* ---- APP ---- */
+        .app-page { display: none; min-height: 100vh; }
+        .app-page.active { display: block; }
+
+        /* Header */
+        .app-header {
+            background: rgba(22,27,34,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 14px 28px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .header-logo {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, #1f6feb, #388bfd);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .header-logo i { font-size: 18px; color: white; }
+        .header-title h1 { font-size: 1.1rem; font-weight: 600; }
+        .header-title span { font-size: 0.75rem; color: rgba(255,255,255,0.4); }
+
+        .header-right { display: flex; align-items: center; gap: 12px; }
+
+        .pending-badge {
+            background: linear-gradient(135deg, #d29922, #e3b341);
+            color: #1c1000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: none;
+        }
+        .pending-badge.visible { display: inline-block; }
+
+        .user-chip {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.07);
+            padding: 6px 14px 6px 8px;
+            border-radius: 30px;
+        }
+        .user-avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: #1f6feb;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 0.85rem;
+            overflow: hidden;
+        }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-email { font-size: 0.82rem; color: rgba(255,255,255,0.7); }
+
+        .logout-btn {
+            background: rgba(248,81,73,0.15);
+            border: 1px solid rgba(248,81,73,0.3);
+            color: #f85149;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .logout-btn:hover { background: #f85149; color: white; }
+
+        /* Main area */
+        .app-body { max-width: 1300px; margin: 0 auto; padding: 28px; }
+
+        /* Tabs */
+        .tabs {
+            display: flex; gap: 4px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 6px;
+            margin-bottom: 28px;
+            width: fit-content;
+        }
+        .tab-btn {
+            padding: 10px 22px;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .tab-btn.active {
+            background: rgba(56,139,253,0.15);
+            color: #58a6ff;
+            border: 1px solid rgba(56,139,253,0.3);
+        }
+        .tab-btn .count-chip {
+            background: #d29922;
+            color: #1c1000;
+            border-radius: 10px;
+            padding: 1px 7px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        /* Cards grid */
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .section-header h2 { font-size: 1.15rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .section-header h2 i { color: #58a6ff; }
+
+        .refresh-btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .refresh-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+
+        /* Transfer Request Cards */
+        .requests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 16px;
+        }
+
+        .request-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 22px;
+            transition: all 0.3s;
+            animation: slideIn 0.4s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .request-card:hover {
+            border-color: rgba(56,139,253,0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        .card-top {
+            display: flex; align-items: flex-start; gap: 14px;
+            margin-bottom: 16px;
+        }
+        .file-icon-box {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        .file-icon-box.folder { background: rgba(210,153,34,0.2); color: #e3b341; }
+        .file-icon-box.document { background: rgba(56,139,253,0.2); color: #58a6ff; }
+        .file-icon-box.spreadsheet { background: rgba(63,185,80,0.2); color: #3fb950; }
+        .file-icon-box.other { background: rgba(139,148,158,0.2); color: #8b949e; }
+
+        .card-file-info { flex: 1; min-width: 0; }
+        .card-file-name { font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-file-type { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 3px; }
+
+        .card-time {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.35);
+            white-space: nowrap;
+        }
+
+        .card-sender {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 14px;
+        }
+        .sender-avatar {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6e40c9, #a371f7);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; font-weight: 600;
+            flex-shrink: 0;
+        }
+        .sender-info { flex: 1; min-width: 0; }
+        .sender-label { font-size: 0.68rem; color: rgba(255,255,255,0.35); }
+        .sender-email { font-size: 0.82rem; color: rgba(255,255,255,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .card-meta {
+            display: flex; gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .meta-tag {
+            background: rgba(255,255,255,0.06);
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.5);
+            display: flex; align-items: center; gap: 5px;
+        }
+        .meta-tag i { font-size: 0.65rem; }
+
+        .card-actions { display: flex; gap: 10px; }
+
+        .accept-btn {
+            flex: 1;
+            padding: 11px;
+            background: linear-gradient(135deg, #238636, #2ea043);
+            border: none; border-radius: 10px;
+            color: white; font-size: 0.88rem; font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 4px 15px rgba(46,160,67,0.3);
+        }
+        .accept-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(46,160,67,0.4); }
+        .accept-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .accept-btn.loading { pointer-events: none; }
+
+        .reject-btn {
+            padding: 11px 16px;
+            background: rgba(248,81,73,0.1);
+            border: 1px solid rgba(248,81,73,0.25);
+            border-radius: 10px;
+            color: #f85149; font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .reject-btn:hover { background: rgba(248,81,73,0.2); }
+
+        .mini-spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Status badges on accepted cards */
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .status-badge.accepted { background: rgba(63,185,80,0.15); color: #3fb950; border: 1px solid rgba(63,185,80,0.3); }
+        .status-badge.rejected { background: rgba(248,81,73,0.12); color: #f85149; border: 1px solid rgba(248,81,73,0.3); }
+        .status-badge.pending  { background: rgba(210,153,34,0.15); color: #e3b341; border: 1px solid rgba(210,153,34,0.3); }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            color: rgba(255,255,255,0.35);
+        }
+        .empty-state i { font-size: 3.5rem; margin-bottom: 16px; display: block; opacity: 0.3; }
+        .empty-state h3 { font-size: 1.1rem; margin-bottom: 8px; color: rgba(255,255,255,0.5); }
+        .empty-state p { font-size: 0.85rem; }
+
+        /* Loading state */
+        .loading-state {
+            text-align: center;
+            padding: 80px 40px;
+        }
+        .spinner-large {
+            width: 52px; height: 52px;
+            border: 4px solid rgba(255,255,255,0.08);
+            border-top-color: #388bfd;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        .loading-state p { color: rgba(255,255,255,0.4); font-size: 0.9rem; }
+
+        /* LOG TABLE */
+        .log-table-wrap {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        .log-table { width: 100%; border-collapse: collapse; }
+        .log-table th {
+            padding: 14px 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.35);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            text-align: left;
+        }
+        .log-table td {
+            padding: 14px 20px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            vertical-align: middle;
+        }
+        .log-table tr:last-child td { border-bottom: none; }
+        .log-table tr:hover td { background: rgba(56,139,253,0.05); }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 28px; right: 28px;
+            background: #1c1c1c;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 14px 20px;
+            display: flex; align-items: center; gap: 12px;
+            font-size: 0.88rem;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            z-index: 9999;
+            animation: toastIn 0.4s ease;
+            max-width: 380px;
+        }
+        @keyframes toastIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+        .toast.success { border-color: rgba(63,185,80,0.4); }
+        .toast.success i { color: #3fb950; font-size: 1.2rem; }
+        .toast.error { border-color: rgba(248,81,73,0.4); }
+        .toast.error i { color: #f85149; font-size: 1.2rem; }
+        .toast.info { border-color: rgba(56,139,253,0.4); }
+        .toast.info i { color: #58a6ff; font-size: 1.2rem; }
+
+        /* stats bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 18px 20px;
+        }
+        .stat-value { font-size: 1.8rem; font-weight: 700; }
+        .stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-top: 4px; }
+        .stat-card.pending-stat .stat-value { color: #e3b341; }
+        .stat-card.accepted-stat .stat-value { color: #3fb950; }
+        .stat-card.rejected-stat .stat-value { color: #f85149; }
+        .stat-card.total-stat .stat-value { color: #58a6ff; }
+
+        @media (max-width: 700px) {
+            .app-body { padding: 16px; }
+            .app-header { padding: 12px 16px; }
+            .user-email { display: none; }
+            .requests-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ====== LOGIN ====== -->
+<div class="login-page" id="loginPage">
+    <div class="login-card">
+        <div class="login-logo">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <h1>Drive Ownership Portal</h1>
+        <p>Company Drive Admin Dashboard</p>
+        <div class="admin-badge">🏢 cisi.in / innspark.in Admin</div>
+
+        <button class="google-btn" onclick="handleSignIn()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+            Sign in with Company Google Account
+        </button>
+
+        <div class="login-note">
+            <i class="fas fa-info-circle" style="color:#58a6ff"></i>
+            Sign in with your <strong>@cisi.in</strong> or <strong>@innspark.in</strong> account to manage ownership transfer requests from employees.
+        </div>
+    </div>
+</div>
+
+<!-- ====== MAIN APP ====== -->
+<div class="app-page" id="appPage">
+
+    <header class="app-header">
+        <div class="header-left">
+            <div class="header-logo"><i class="fas fa-shield-alt"></i></div>
+            <div class="header-title">
+                <h1>Drive Ownership Portal</h1>
+                <span>Admin Dashboard — cisi.in / innspark.in</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <span class="pending-badge" id="pendingBadge">0 Pending</span>
+            <div class="user-chip">
+                <div class="user-avatar" id="userAvatar"><span id="userInitial">A</span></div>
+                <span class="user-email" id="userEmailDisplay">admin@cisi.in</span>
+            </div>
+            <button class="logout-btn" onclick="handleSignOut()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="app-body">
+
+        <!-- Stats -->
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-card total-stat">
+                <div class="stat-value" id="statTotal">—</div>
+                <div class="stat-label">Total Requests</div>
+            </div>
+            <div class="stat-card pending-stat">
+                <div class="stat-value" id="statPending">—</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card accepted-stat">
+                <div class="stat-value" id="statAccepted">—</div>
+                <div class="stat-label">Accepted</div>
+            </div>
+            <div class="stat-card rejected-stat">
+                <div class="stat-value" id="statRejected">—</div>
+                <div class="stat-label">Rejected</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" id="tabPending" onclick="switchTab('pending')">
+                <i class="fas fa-clock"></i> Pending
+                <span class="count-chip" id="pendingChip" style="display:none">0</span>
+            </button>
+            <button class="tab-btn" id="tabHistory" onclick="switchTab('history')">
+                <i class="fas fa-history"></i> History / Logs
+            </button>
+        </div>
+
+        <!-- Pending Requests Panel -->
+        <div id="panelPending">
+            <div class="section-header">
+                <h2><i class="fas fa-inbox"></i> Pending Ownership Requests</h2>
+                <button class="refresh-btn" onclick="loadPendingRequests()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            <div class="requests-grid" id="requestsGrid">
+                <div class="loading-state">
+                    <div class="spinner-large"></div>
+                    <p>Loading pending requests...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- History / Logs Panel -->
+        <div id="panelHistory" style="display:none">
+            <div class="section-header">
+                <h2><i class="fas fa-book"></i> Transfer History</h2>
+                <button class="refresh-btn" onclick="loadHistory()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            <div class="log-table-wrap">
+                <table class="log-table">
+                    <thead>
+                        <tr>
+                            <th>File / Folder</th>
+                            <th>Sent By (Employee)</th>
+                            <th>Accepted By (Admin)</th>
+                            <th>Sent At</th>
+                            <th>Acted At</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        <tr><td colspan="6" style="text-align:center;padding:40px;color:rgba(255,255,255,0.3)">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ====== SCRIPTS ====== -->
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
+
+<script>
+// ===================================================
+// CONFIGURATION  — Fill these in!
+// ===================================================
+const CONFIG = {
+    CLIENT_ID:  '316518188310-ope33gher5kase39qfnqpca4tc3p5cta.apps.googleusercontent.com',
+    API_KEY:    'AIzaSyDdtnIAiIQq1yvKfo3ven2oAxkrikrJ9pY',
+    // Google Apps Script Web App URL (deploy Code.gs as web app)
+    APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyFvR7T5vwHlnZcp4kj27kNCGTCMm2wxrgEvcV3U0TUe_4_RpyOXUmjpkGheb3DztHY/exec',
+    // The company drive admin email (who becomes the new owner)
+    COMPANY_EMAIL: 'mithunpm76@gmail.com',
+    SCOPES: 'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/userinfo.email'
+};
+
+// ===================================================
+// STATE
+// ===================================================
+let tokenClient;
+let accessToken = null;
+let currentUser  = null;
+let currentTab   = 'pending';
+let allRequests  = [];
+
+// ===================================================
+// INIT
+// ===================================================
+window.onload = () => {
+    gapi.load('client', initGapi);
+    initGIS();
+};
+
+async function initGapi() {
+    await gapi.client.init({
+        apiKey: CONFIG.API_KEY,
+        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
+    });
+}
+
+function initGIS() {
+    tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CONFIG.CLIENT_ID,
+        scope: CONFIG.SCOPES,
+        callback: handleAuthResponse
+    });
+}
+
+// ===================================================
+// AUTH
+// ===================================================
+function handleSignIn() {
+    if (CONFIG.CLIENT_ID.startsWith('YOUR_')) {
+        showToast('error', 'fa-cog', 'Please configure CLIENT_ID and APPS_SCRIPT_URL first!');
+        return;
+    }
+    tokenClient.requestAccessToken({ prompt: 'consent' });
+}
+
+async function handleAuthResponse(response) {
+    if (response.error) { showToast('error','fa-times','Auth failed: '+response.error); return; }
+    accessToken = response.access_token;
+    await fetchUserInfo();
+    showApp();
+    loadPendingRequests();
+}
+
+async function fetchUserInfo() {
+    const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    currentUser = await res.json();
+    document.getElementById('userEmailDisplay').textContent = currentUser.email;
+    document.getElementById('userInitial').textContent = currentUser.email[0].toUpperCase();
+    if (currentUser.picture) {
+        document.getElementById('userAvatar').innerHTML = `<img src="${currentUser.picture}">`;
+    }
+}
+
+function handleSignOut() {
+    google.accounts.oauth2.revoke(accessToken);
+    accessToken = null; currentUser = null;
+    document.getElementById('loginPage').classList.remove('hidden');
+    document.getElementById('appPage').classList.remove('active');
+}
+
+function showApp() {
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('appPage').classList.add('active');
+}
+
+// ===================================================
+// TAB NAVIGATION
+// ===================================================
+function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tab === 'pending' ? 'tabPending' : 'tabHistory').classList.add('active');
+    document.getElementById('panelPending').style.display  = tab === 'pending'  ? '' : 'none';
+    document.getElementById('panelHistory').style.display  = tab === 'history'  ? '' : 'none';
+    if (tab === 'history') loadHistory();
+}
+
+// ===================================================
+// LOAD PENDING REQUESTS from Apps Script
+// ===================================================
+async function loadPendingRequests() {
+    document.getElementById('requestsGrid').innerHTML = `
+        <div class="loading-state" style="grid-column:1/-1">
+            <div class="spinner-large"></div><p>Loading pending requests...</p>
+        </div>`;
+
+    try {
+        const url = CONFIG.APPS_SCRIPT_URL + '?action=getPending&adminEmail=' + encodeURIComponent(currentUser?.email || '');
+        const res  = await fetch(url);
+        const data = await res.json();
+
+        allRequests = data.requests || [];
+        renderPendingCards(allRequests);
+        updateStats(data.stats || {});
+    } catch(e) {
+        document.getElementById('requestsGrid').innerHTML = renderEmptyState(
+            'fa-exclamation-circle',
+            'Could not load requests',
+            'Check your Apps Script URL configuration.'
+        );
+    }
+}
+
+function renderPendingCards(requests) {
+    const grid = document.getElementById('requestsGrid');
+    const pending = requests.filter(r => r.status === 'pending');
+
+    // update pending badge
+    const chip = document.getElementById('pendingChip');
+    const badge = document.getElementById('pendingBadge');
+    if (pending.length > 0) {
+        chip.textContent = pending.length; chip.style.display = '';
+        badge.textContent = pending.length + ' Pending'; badge.classList.add('visible');
+    } else {
+        chip.style.display = 'none'; badge.classList.remove('visible');
+    }
+
+    if (pending.length === 0) {
+        grid.innerHTML = renderEmptyState('fa-check-circle','No Pending Requests','All ownership transfers have been handled!');
+        return;
+    }
+
+    grid.innerHTML = pending.map(req => buildRequestCard(req)).join('');
+}
+
+function buildRequestCard(req) {
+    const iconClass = getIconClass(req.mimeType);
+    const iconFA    = getIconFA(req.mimeType);
+    const timeAgo   = formatTimeAgo(req.sentAt);
+    const initial   = (req.senderEmail || '?')[0].toUpperCase();
+
+    return `
+    <div class="request-card" id="card-${req.id}">
+        <div class="card-top">
+            <div class="file-icon-box ${iconClass}"><i class="fas ${iconFA}"></i></div>
+            <div class="card-file-info">
+                <div class="card-file-name" title="${req.fileName}">${req.fileName}</div>
+                <div class="card-file-type">${req.isFolder ? 'Folder (includes all contents)' : 'File'}</div>
+            </div>
+            <div class="card-time">${timeAgo}</div>
+        </div>
+
+        <div class="card-sender">
+            <div class="sender-avatar">${initial}</div>
+            <div class="sender-info">
+                <div class="sender-label">Sent by employee</div>
+                <div class="sender-email">${req.senderEmail}</div>
+            </div>
+        </div>
+
+        <div class="card-meta">
+            <span class="meta-tag"><i class="fas fa-file"></i> ID: ${req.fileId.substring(0,12)}…</span>
+            ${req.isFolder ? '<span class="meta-tag"><i class="fas fa-folder"></i> Contains sub-items</span>' : ''}
+            <span class="meta-tag"><i class="fas fa-calendar"></i> ${formatDate(req.sentAt)}</span>
+        </div>
+
+        <div class="card-actions">
+            <button class="accept-btn" onclick="acceptTransfer('${req.id}', '${req.fileId}', '${req.fileName.replace(/'/g, "\\'")}', ${req.isFolder})">
+                <i class="fas fa-check"></i> Accept Ownership
+            </button>
+            <button class="reject-btn" onclick="rejectTransfer('${req.id}', '${req.fileName.replace(/'/g, "\\'")}')">
+                <i class="fas fa-times"></i> Reject
+            </button>
+        </div>
+    </div>`;
+}
+
+function renderEmptyState(icon, title, sub) {
+    return `<div class="empty-state" style="grid-column:1/-1">
+        <i class="fas ${icon}"></i><h3>${title}</h3><p>${sub}</p>
+    </div>`;
+}
+
+// ===================================================
+// ACCEPT OWNERSHIP TRANSFER
+// ===================================================
+async function acceptTransfer(reqId, fileId, fileName, isFolder) {
+    const btn = document.getElementById(`accept-${reqId}`);
+    btn.classList.add('loading');
+    btn.innerHTML = '<div class="mini-spinner"></div> Accepting...';
+    btn.disabled = true;
+
+    try {
+        // Step 1: Transfer ownership of root file/folder via Drive API
+        await transferOwnership(fileId, CONFIG.COMPANY_EMAIL);
+
+        // Step 2: If folder, recursively transfer all children
+        if (isFolder) {
+            showToast('info', 'fa-folder-open', `Scanning sub-items in "${fileName}"…`);
+            await recursiveTransfer(fileId);
+        }
+
+        // Step 3: Log to Apps Script (mark as accepted)
+        await logAction(reqId, 'accepted', currentUser.email);
+
+        // Step 4: Animate card out
+        const card = document.getElementById(`card-${reqId}`);
+        card.style.transition = 'all 0.4s';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+        setTimeout(() => { card.remove(); refreshStats(); }, 400);
+
+        showToast('success', 'fa-check-circle', `Ownership of "${fileName}" accepted! You are now the owner.`);
+
+    } catch(err) {
+        btn.classList.remove('loading');
+        btn.innerHTML = '<i class="fas fa-check"></i> Accept Ownership';
+        btn.disabled = false;
+        showToast('error', 'fa-exclamation-triangle', 'Failed: ' + err.message);
+        console.error(err);
+    }
+}
+
+async function transferOwnership(fileId, newOwnerEmail) {
+    // First make sure it's shared as writer (required before owner transfer for Workspace)
+    const shareRes = await fetch(
+        `https://www.googleapis.com/drive/v3/files/${fileId}/permissions?sendNotificationEmail=false`,
+        {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ type:'user', role:'writer', emailAddress: newOwnerEmail })
+        }
+    );
+    // Ignore "already has permission" errors
+    if (!shareRes.ok) {
+        const err = await shareRes.json().catch(()=>({}));
+        if (!JSON.stringify(err).includes('already has permission')) {
+            throw new Error(err.error?.message || 'Share failed');
+        }
+    }
+
+    // For Google Workspace (same domain), direct ownership transfer is allowed
+    // List current permissions to find the right permissionId
+    const listRes = await gapi.client.drive.permissions.list({
+        fileId,
+        fields: 'permissions(id,emailAddress,role)'
+    });
+    const perms = listRes.result.permissions || [];
+    const existing = perms.find(p => p.emailAddress === newOwnerEmail);
+
+    if (existing) {
+        // Update role to 'owner'
+        await fetch(
+            `https://www.googleapis.com/drive/v3/files/${fileId}/permissions/${existing.id}?transferOwnership=true`,
+            {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ role: 'owner' })
+            }
+        );
+    } else {
+        // Direct owner assignment (Workspace to Workspace)
+        await fetch(
+            `https://www.googleapis.com/drive/v3/files/${fileId}/permissions?transferOwnership=true&sendNotificationEmail=false`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ type:'user', role:'owner', emailAddress: newOwnerEmail })
+            }
+        );
+    }
+}
+
+async function recursiveTransfer(folderId) {
+    const res = await gapi.client.drive.files.list({
+        q: `'${folderId}' in parents and trashed=false`,
+        fields: 'files(id,name,mimeType)',
+        pageSize: 1000
+    });
+    const children = res.result.files || [];
+    for (const child of children) {
+        try {
+            await transferOwnership(child.id, CONFIG.COMPANY_EMAIL);
+            if (child.mimeType === 'application/vnd.google-apps.folder') {
+                await recursiveTransfer(child.id);
+            }
+        } catch(e) {
+            console.warn('Could not transfer:', child.name, e.message);
+        }
+    }
+}
+
+// ===================================================
+// REJECT TRANSFER
+// ===================================================
+async function rejectTransfer(reqId, fileName) {
+    if (!confirm(`Reject ownership request for "${fileName}"?`)) return;
+    try {
+        await logAction(reqId, 'rejected', currentUser.email);
+        const card = document.getElementById(`card-${reqId}`);
+        card.style.transition = 'all 0.4s';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+        setTimeout(() => { card.remove(); refreshStats(); }, 400);
+        showToast('info', 'fa-ban', `Request for "${fileName}" rejected.`);
+    } catch(e) {
+        showToast('error', 'fa-times', 'Reject failed: ' + e.message);
+    }
+}
+
+// ===================================================
+// LOG ACTION to Apps Script backend
+// ===================================================
+async function logAction(reqId, action, adminEmail) {
+    const params = new URLSearchParams({
+        action: 'updateStatus',
+        reqId,
+        status: action,
+        adminEmail,
+        actedAt: new Date().toISOString()
+    });
+    const res = await fetch(CONFIG.APPS_SCRIPT_URL + '?' + params.toString());
+    const data = await res.json().catch(() => ({}));
+    if (data.error) throw new Error(data.error);
+    return data;
+}
+
+// ===================================================
+// LOAD HISTORY
+// ===================================================
+async function loadHistory() {
+    const tbody = document.getElementById('historyBody');
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:rgba(255,255,255,0.3)">Loading history...</td></tr>`;
+
+    try {
+        const url = CONFIG.APPS_SCRIPT_URL + '?action=getAll';
+        const res  = await fetch(url);
+        const data = await res.json();
+        const rows = data.requests || [];
+
+        if (rows.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:rgba(255,255,255,0.3)">No transfer history yet.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = rows.map(r => `
+            <tr>
+                <td>
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <span style="font-size:1.2rem">${r.isFolder ? '📁' : '📄'}</span>
+                        <div>
+                            <div style="font-weight:500">${r.fileName}</div>
+                            <div style="font-size:0.72rem;color:rgba(255,255,255,0.35)">${r.fileId}</div>
+                        </div>
+                    </div>
+                </td>
+                <td style="color:#a371f7">${r.senderEmail}</td>
+                <td style="color:#58a6ff">${r.adminEmail || '—'}</td>
+                <td style="color:rgba(255,255,255,0.5);font-size:0.82rem">${formatDate(r.sentAt)}</td>
+                <td style="color:rgba(255,255,255,0.5);font-size:0.82rem">${r.actedAt ? formatDate(r.actedAt) : '—'}</td>
+                <td><span class="status-badge ${r.status}">${statusIcon(r.status)} ${r.status}</span></td>
+            </tr>
+        `).join('');
+
+        updateStats(data.stats || {});
+    } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:#f85149">${e.message}</td></tr>`;
+    }
+}
+
+function statusIcon(s) {
+    return s === 'accepted' ? '✅' : s === 'rejected' ? '❌' : '⏳';
+}
+
+// ===================================================
+// STATS
+// ===================================================
+function updateStats(stats) {
+    document.getElementById('statTotal').textContent    = stats.total    ?? '—';
+    document.getElementById('statPending').textContent  = stats.pending  ?? '—';
+    document.getElementById('statAccepted').textContent = stats.accepted ?? '—';
+    document.getElementById('statRejected').textContent = stats.rejected ?? '—';
+}
+
+function refreshStats() {
+    // Reload requests silently to refresh stats
+    fetch(CONFIG.APPS_SCRIPT_URL + '?action=getPending')
+        .then(r => r.json())
+        .then(d => updateStats(d.stats || {}))
+        .catch(() => {});
+}
+
+// ===================================================
+// HELPERS
+// ===================================================
+function getIconClass(mime) {
+    if (!mime) return 'other';
+    if (mime.includes('folder'))       return 'folder';
+    if (mime.includes('document') || mime.includes('word'))  return 'document';
+    if (mime.includes('spreadsheet') || mime.includes('excel')) return 'spreadsheet';
+    return 'other';
+}
+function getIconFA(mime) {
+    if (!mime) return 'fa-file';
+    if (mime.includes('folder'))       return 'fa-folder';
+    if (mime.includes('document') || mime.includes('word'))  return 'fa-file-word';
+    if (mime.includes('spreadsheet') || mime.includes('excel')) return 'fa-file-excel';
+    if (mime.includes('presentation')) return 'fa-file-powerpoint';
+    if (mime.includes('image'))        return 'fa-file-image';
+    if (mime.includes('pdf'))          return 'fa-file-pdf';
+    return 'fa-file';
+}
+
+function formatDate(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+function formatTimeAgo(iso) {
+    if (!iso) return '';
+    const diff = Date.now() - new Date(iso).getTime();
+    const mins = Math.floor(diff/60000);
+    if (mins < 1)  return 'Just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins/60);
+    if (hrs < 24)  return `${hrs}h ago`;
+    return `${Math.floor(hrs/24)}d ago`;
+}
+
+// ===================================================
+// TOAST
+// ===================================================
+let toastTimer;
+function showToast(type, icon, msg) {
+    clearTimeout(toastTimer);
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = `<i class="fas ${icon}"></i><span>${msg}</span>`;
+    document.body.appendChild(t);
+    toastTimer = setTimeout(() => t.remove(), 5000);
+}
+</script>
+</body>
+</html>
