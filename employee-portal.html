@@ -213,13 +213,13 @@
 <script src="https://accounts.google.com/gsi/client"></script>
 <script>
 // ——————————————————————————————————
-// CONFIG — fill these in!
+// CONFIG
 // ——————————————————————————————————
 const CONFIG = {
-    CLIENT_ID: '316518188310-ope33gher5kase39qfnqpca4tc3p5cta.apps.googleusercontent.com',
-    API_KEY:   'AIzaSyDdtnIAiIQq1yvKfo3ven2oAxkrikrJ9pY',
-    // Same Apps Script URL as the admin dashboard
+    CLIENT_ID:  '316518188310-ope33gher5kase39qfnqpca4tc3p5cta.apps.googleusercontent.com',
+    API_KEY:    'AIzaSyDIT3cBjX5GNtflP5Msg5MGNzhx_5GuQ-g',
     APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyFvR7T5vwHlnZcp4kj27kNCGTCMm2wxrgEvcV3U0TUe_4_RpyOXUmjpkGheb3DztHY/exec',
+    ADMIN_EMAIL: 'mithunpm76@gmail.com',
     SCOPES: 'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/userinfo.email'
 };
 
@@ -228,9 +228,7 @@ let currentFolderId = 'root';
 let folderStack = [{ id: 'root', name: 'My Drive' }];
 let allFiles = [], selectedFiles = new Map();
 
-// INIT
 window.onload = () => {
-    // No gapi needed — we use direct fetch with access token
     tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: CONFIG.CLIENT_ID,
         scope: CONFIG.SCOPES,
@@ -238,23 +236,18 @@ window.onload = () => {
     });
 };
 
-// AUTH
 function handleSignIn() {
-    if (CONFIG.CLIENT_ID.startsWith('YOUR_')) { showToast('error','fa-cog','Configure CLIENT_ID first!'); return; }
     tokenClient.requestAccessToken({ prompt: 'consent' });
 }
 
 async function handleAuth(r) {
     if (r.error) { showToast('error','fa-times','Auth error: '+r.error); return; }
     accessToken = r.access_token;
-    const info = await fetch('https://www.googleapis.com/oauth2/v2/userinfo',
-        { headers: { Authorization: `Bearer ${accessToken}` } });
+    const info = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', { headers: { Authorization: `Bearer ${accessToken}` } });
     currentUser = await info.json();
     document.getElementById('userEmail').textContent   = currentUser.email;
     document.getElementById('userInit').textContent    = currentUser.email[0].toUpperCase();
-    if (currentUser.picture) {
-        document.getElementById('userAv').innerHTML = `<img src="${currentUser.picture}">`;
-    }
+    if (currentUser.picture) document.getElementById('userAv').innerHTML = `<img src="${currentUser.picture}">`;
     document.getElementById('loginPage').classList.add('hidden');
     document.getElementById('appPage').classList.add('active');
     loadFiles('root');
@@ -267,19 +260,14 @@ function handleSignOut() {
     document.getElementById('appPage').classList.remove('active');
 }
 
-// FILES — using direct REST API fetch (no gapi dependency)
 async function loadFiles(folderId) {
     currentFolderId = folderId;
     const fl = document.getElementById('fileList');
     fl.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Loading…</p></div>`;
     try {
         const q = encodeURIComponent(`'${folderId}' in parents and trashed=false`);
-        const fields = encodeURIComponent('files(id,name,mimeType,size,modifiedTime)');
-        const url = `https://www.googleapis.com/drive/v3/files?q=${q}&fields=${fields}&orderBy=folder,name&pageSize=200`;
-        const res = await fetch(url, {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-        if (!res.ok) throw new Error('Drive API error: ' + res.status);
+        const url = `https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,mimeType,size,modifiedTime)&orderBy=folder,name&pageSize=200`;
+        const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
         const data = await res.json();
         allFiles = data.files || [];
         renderFiles();
@@ -296,199 +284,104 @@ function renderFiles() {
     }
     fl.innerHTML = allFiles.map(f => {
         const isFolder = f.mimeType === 'application/vnd.google-apps.folder';
-        const cls  = getClass(f.mimeType);
         const icon = getIcon(f.mimeType);
         const sel  = selectedFiles.has(f.id);
         return `
-        <div class="file-row ${sel ? 'selected' : ''}" data-id="${f.id}"
-             onclick="toggleFile(event,'${f.id}',${isFolder})">
+        <div class="file-row ${sel ? 'selected' : ''}" onclick="toggleFile(event,'${f.id}',${isFolder})">
             <div class="f-check"></div>
-            <div class="f-icon ${cls}"><i class="fas ${icon}"></i></div>
+            <div class="f-icon ${getClass(f.mimeType)}"><i class="fas ${icon}"></i></div>
             <div class="f-info">
                 <div class="f-name">${f.name}</div>
                 <div class="f-meta">${isFolder ? 'Folder' : fmtBytes(f.size||0)} · ${fmtDate(f.modifiedTime)}</div>
             </div>
-            ${isFolder ? `<button class="open-btn" onclick="event.stopPropagation();openFolder('${f.id}','${f.name}')">
-                <i class="fas fa-folder-open"></i> Open</button>` : ''}
+            ${isFolder ? `<button class="open-btn" onclick="event.stopPropagation();openFolder('${f.id}','${f.name}')">Open</button>` : ''}
         </div>`;
     }).join('');
 }
 
 function toggleFile(e, id, isFolder) {
-    if (e.target.closest('.open-btn')) return;
+    if (e.target.className === 'open-btn') return;
     const f = allFiles.find(x => x.id === id);
-    if (!f) return;
     if (selectedFiles.has(id)) selectedFiles.delete(id);
     else selectedFiles.set(id, { id: f.id, name: f.name, mimeType: f.mimeType, isFolder });
-    renderFiles();
-    updatePanel();
-}
-
-function selectAll() {
-    allFiles.forEach(f => selectedFiles.set(f.id, {
-        id: f.id, name: f.name, mimeType: f.mimeType,
-        isFolder: f.mimeType === 'application/vnd.google-apps.folder'
-    }));
     renderFiles(); updatePanel();
 }
-function clearSel() { selectedFiles.clear(); renderFiles(); updatePanel(); }
-function removeItem(id) { selectedFiles.delete(id); renderFiles(); updatePanel(); }
 
 function updatePanel() {
     const items = Array.from(selectedFiles.values());
     document.getElementById('selNum').textContent = items.length;
-    const list = document.getElementById('selList');
-    if (!items.length) {
-        list.innerHTML = `<p style="text-align:center;color:rgba(255,255,255,.3);padding:18px;font-size:.82rem">No items selected</p>`;
-    } else {
-        list.innerHTML = items.map(f => `
-        <div class="sel-item">
-            <i class="fas ${getIcon(f.mimeType)}" style="color:rgba(255,255,255,.4);font-size:.9rem"></i>
-            <span class="name">${f.name}</span>
-            <button class="rm-btn" onclick="removeItem('${f.id}')"><i class="fas fa-times"></i></button>
-        </div>`).join('');
-    }
     document.getElementById('sendBtn').disabled = items.length === 0;
+    const list = document.getElementById('selList');
+    if (!items.length) list.innerHTML = `<p style="text-align:center;color:rgba(255,255,255,.3);padding:18px;font-size:.82rem">No items selected</p>`;
+    else list.innerHTML = items.map(f => `<div class="sel-item"><span class="name">${f.name}</span><button class="rm-btn" onclick="removeItem('${f.id}')">×</button></div>`).join('');
 }
 
-function openFolder(id, name) {
-    folderStack.push({ id, name });
-    updateBreadcrumb();
-    loadFiles(id);
-}
-
-function navTo(idx) {
-    folderStack = folderStack.slice(0, idx + 1);
-    updateBreadcrumb();
-    loadFiles(folderStack[idx].id);
-}
-
+function removeItem(id) { selectedFiles.delete(id); renderFiles(); updatePanel(); }
+function selectAll() { allFiles.forEach(f => selectedFiles.set(f.id, { id: f.id, name: f.name, isFolder: f.mimeType.includes('folder') })); renderFiles(); updatePanel(); }
+function clearSel() { selectedFiles.clear(); renderFiles(); updatePanel(); }
+function openFolder(id, name) { folderStack.push({ id, name }); updateBreadcrumb(); loadFiles(id); }
+function navTo(idx) { folderStack = folderStack.slice(0, idx + 1); updateBreadcrumb(); loadFiles(folderStack[idx].id); }
 function updateBreadcrumb() {
-    const bc = document.getElementById('breadcrumb');
-    bc.innerHTML = folderStack.map((f, i) => `
+    document.getElementById('breadcrumb').innerHTML = folderStack.map((f, i) => `
         ${i > 0 ? '<span class="bc-sep">›</span>' : ''}
-        <span class="bc-item ${i === folderStack.length-1 ? 'active' : ''}"
-              onclick="navTo(${i})">${f.name}</span>
+        <span class="bc-item ${i === folderStack.length-1 ? 'active' : ''}" onclick="navTo(${i})">${f.name}</span>
     `).join('');
 }
-
 function refreshFiles() { loadFiles(currentFolderId); }
 
-// SEND REQUESTS
 async function sendRequests() {
     const items = Array.from(selectedFiles.values());
-    if (!items.length) return;
-
     const btn = document.getElementById('sendBtn');
     btn.disabled = true;
-    btn.innerHTML = '<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite"></div> Sending…';
+    btn.innerHTML = 'Sending...';
 
-    let successCount = 0, failCount = 0, lastError = '';
-
+    let successCount = 0;
     for (const item of items) {
-        console.log('Processing item:', item.name);
         try {
-            const isAdminSelf = currentUser.email.toLowerCase() === 'mithunpm76@gmail.com';
-            
-            if (!isAdminSelf) {
-                console.log('Step 1: Sharing with admin...');
-                const shareRes = await fetch(
-                    `https://www.googleapis.com/drive/v3/files/${item.id}/permissions?sendNotificationEmail=true`,
-                    {
-                        method: 'POST',
-                        headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ type: 'user', role: 'writer', emailAddress: 'mithunpm76@gmail.com' })
-                    }
-                );
-
-                if (!shareRes.ok) {
-                    const errorData = await shareRes.json();
-                    throw new Error('Drive API Error: ' + (errorData.error ? errorData.error.message : shareRes.statusText));
-                }
-                console.log('Step 1 Success: Shared');
-            } else {
-                console.log('Step 1 Skipped: You are the admin');
-            }
-
-            console.log('Step 2: Logging in spreadsheet...');
-            const params = new URLSearchParams({
-                action: 'submitRequest',
-                fileId: item.id,
-                fileName: item.name,
-                mimeType: item.mimeType,
-                isFolder: item.isFolder,
-                senderEmail: currentUser.email
+            // 1. Share & Initiate Transfer
+            const res = await fetch(`https://www.googleapis.com/drive/v3/files/${item.id}/permissions?transferOwnership=true`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role: 'owner', type: 'user', emailAddress: CONFIG.ADMIN_EMAIL })
             });
-            
-            const logRes = await fetch(CONFIG.APPS_SCRIPT_URL + '?' + params.toString());
-            const logData = await logRes.json().catch(() => ({ error: 'JSON parse failed' }));
-            
-            if (logData.error) {
-                console.error('Apps Script Error:', logData.error);
-            } else {
-                console.log('Step 2 Success: Logged');
-            }
-            
+
+            // 2. Record in Spreadsheet
+            await fetch(CONFIG.APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'saveRequest',
+                    id: 'REQ-' + Date.now(),
+                    fileId: item.id,
+                    fileName: item.name,
+                    isFolder: item.isFolder,
+                    senderEmail: currentUser.email,
+                    adminEmail: CONFIG.ADMIN_EMAIL
+                })
+            });
             successCount++;
-        } catch(e) {
-            failCount++;
-            lastError = e.name + ': ' + e.message;
-            console.error('Full Error details:', e);
-        }
+        } catch(e) { console.error(e); }
     }
 
     btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Ownership Request';
-
-    if (failCount === 0) {
-        showToast('success', 'fa-check-circle',
-            `${successCount} request(s) sent! Admin will review and accept.`);
-        clearSel();
-    } else {
-        showToast('error', 'fa-exclamation-triangle',
-            `${successCount} sent, ${failCount} failed. Error: ${lastError}`);
-    }
+    btn.innerHTML = 'Send Ownership Request';
+    showToast('success', 'fa-check', `${successCount} requests sent! Admin must accept in Gmail.`);
+    clearSel();
 }
 
-// HELPERS
-function getClass(m) {
-    if (!m) return 'other';
-    if (m.includes('folder')) return 'folder';
-    if (m.includes('document')||m.includes('word')) return 'document';
-    if (m.includes('spreadsheet')||m.includes('excel')) return 'spreadsheet';
-    return 'other';
-}
-function getIcon(m) {
-    if (!m) return 'fa-file';
-    if (m.includes('folder')) return 'fa-folder';
-    if (m.includes('document')||m.includes('word')) return 'fa-file-word';
-    if (m.includes('spreadsheet')||m.includes('excel')) return 'fa-file-excel';
-    if (m.includes('presentation')) return 'fa-file-powerpoint';
-    if (m.includes('image')) return 'fa-file-image';
-    if (m.includes('pdf')) return 'fa-file-pdf';
-    return 'fa-file';
-}
-function fmtBytes(b) {
-    if (b === 0) return '—';
-    if (b < 1024) return b+' B';
-    if (b < 1048576) return (b/1024).toFixed(1)+' KB';
-    return (b/1048576).toFixed(1)+' MB';
-}
-function fmtDate(iso) {
-    if (!iso) return '';
-    return new Date(iso).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-}
-let tTimer;
+function getClass(m) { return m.includes('folder') ? 'folder' : m.includes('spreadsheet') ? 'spreadsheet' : 'other'; }
+function getIcon(m) { return m.includes('folder') ? 'fa-folder' : m.includes('spreadsheet') ? 'fa-file-excel' : 'fa-file'; }
+function fmtBytes(b) { return b < 1024 ? b+' B' : (b/1024).toFixed(1)+' KB'; }
+function fmtDate(iso) { return new Date(iso).toLocaleDateString(); }
 function showToast(type, icon, msg) {
-    clearTimeout(tTimer);
-    const old = document.querySelector('.toast');
-    if (old) old.remove();
     const t = document.createElement('div');
     t.className = `toast ${type}`;
     t.innerHTML = `<i class="fas ${icon}"></i><span>${msg}</span>`;
     document.body.appendChild(t);
-    tTimer = setTimeout(() => t.remove(), 5000);
+    setTimeout(() => t.remove(), 5000);
 }
 </script>
 </body>
 </html>
+
