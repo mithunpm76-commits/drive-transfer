@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a1a2a 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .logo h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .logo span {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-dot {
+            width: 10px;
+            height: 10px;
+            background: #34a853;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Card */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-header i {
+            color: #4285f4;
+            font-size: 1.2rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Input Group */
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 16px 16px 16px 48px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.2);
+        }
+
+        .input-wrapper input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Mode Toggle */
+        .mode-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 24px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            font-family: inherit;
+            font-size: 0.9rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            color: #fff;
+        }
+
+        /* File List */
+        .file-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .file-list-header h3 {
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-list-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-sm:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 12px 12px 42px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-family: inherit;
+        }
+
+        .file-list-container {
+            max-height: 350px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-item:hover {
+            background: rgba(66, 133, 244, 0.1);
+        }
+
+        .file-item.selected {
+            background: rgba(66, 133, 244, 0.2);
+            border-left: 3px solid #4285f4;
+        }
+
+        .file-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .file-item.selected .file-checkbox {
+            background: #4285f4;
+            border-color: #4285f4;
+        }
+
+        .file-item.selected .file-checkbox::after {
+            content: '✓';
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .file-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .file-icon.folder {
+            background: rgba(251, 188, 4, 0.2);
+            color: #fbbc04;
+        }
+
+        .file-icon.document {
+            background: rgba(66, 133, 244, 0.2);
+            color: #4285f4;
+        }
+
+        .file-icon.spreadsheet {
+            background: rgba(52, 168, 83, 0.2);
+            color: #34a853;
+        }
+
+        .file-icon.image {
+            background: rgba(234, 67, 53, 0.2);
+            color: #ea4335;
+        }
+
+        .file-icon.other {
+            background: rgba(155, 155, 155, 0.2);
+            color: #9b9b9b;
+        }
+
+        .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-meta {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 4px;
+        }
+
+        /* Selection Summary */
+        .selection-summary {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: rgba(66, 133, 244, 0.1);
+            border-radius: 10px;
+            margin-top: 16px;
+        }
+
+        .selection-count {
+            color: #4285f4;
+            font-weight: 600;
+        }
+
+        /* Transfer Button */
+        .btn-transfer {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            border: none;
+            border-radius: 14px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(66, 133, 244, 0.4);
+        }
+
+        .btn-transfer:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(66, 133, 244, 0.5);
+        }
+
+        .btn-transfer:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Progress */
+        .progress-section {
+            display: none;
+        }
+
+        .progress-section.active {
+            display: block;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4285f4, #34a853);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .transfer-log {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .log-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .log-success {
+            color: #34a853;
+        }
+
+        .log-error {
+            color: #ea4335;
+        }
+
+        .log-info {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #4285f4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Results */
+        .results-section {
+            display: none;
+            text-align: center;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .results-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .results-icon.success {
+            background: rgba(52, 168, 83, 0.2);
+            color: #34a853;
+        }
+
+        .results-stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin: 32px 0;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .stat.success .stat-value {
+            color: #34a853;
+        }
+
+        .stat.error .stat-value {
+            color: #ea4335;
+        }
+
+        /* Footer Note */
+        .footer-note {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+        }
+
+        /* Responsive - Comprehensive */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .container {
+                max-width: 100%;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+                padding: 16px;
+                border-radius: 16px;
+            }
+
+            .logo {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .logo-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
+
+            .logo h1 {
+                font-size: 1.2rem;
+            }
+
+            .user-info {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            .card {
+                padding: 16px;
+                border-radius: 16px;
+                margin-bottom: 16px;
+            }
+
+            .card-header h2 {
+                font-size: 1rem;
+            }
+
+            .input-wrapper input {
+                padding: 14px 14px 14px 44px;
+                font-size: 0.95rem;
+            }
+
+            .mode-toggle {
+                flex-direction: column;
+                gap: 8px;
+                padding: 8px;
+            }
+
+            .mode-btn {
+                padding: 14px;
+                font-size: 0.85rem;
+                border-radius: 8px;
+            }
+
+            .file-list-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .file-list-header h3 {
+                font-size: 0.95rem;
+            }
+
+            .file-list-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .btn-sm {
+                flex: 1;
+                justify-content: center;
+                padding: 10px 12px;
+                font-size: 0.8rem;
+            }
+
+            .search-box input {
+                padding: 14px 14px 14px 40px;
+            }
+
+            .file-list-container {
+                max-height: 280px;
+            }
+
+            .file-item {
+                padding: 12px;
+                gap: 10px;
+            }
+
+            .file-checkbox {
+                width: 20px;
+                height: 20px;
+                min-width: 20px;
+            }
+
+            .file-icon {
+                width: 36px;
+                height: 36px;
+                min-width: 36px;
+                font-size: 1rem;
+            }
+
+            .file-name {
+                font-size: 0.9rem;
+            }
+
+            .file-meta {
+                font-size: 0.75rem;
+            }
+
+            .selection-summary {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+
+            .btn-transfer {
+                padding: 16px;
+                font-size: 1rem;
+                border-radius: 12px;
+            }
+
+            .results-stats {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .footer-note {
+                padding: 16px;
+                font-size: 0.75rem;
+            }
+
+            .progress-bar {
+                height: 8px;
+            }
+
+            .transfer-log {
+                max-height: 150px;
+                padding: 12px;
+                font-size: 0.75rem;
+            }
+
+            .results-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            body {
+                padding: 8px;
+            }
+
+            .card {
+                padding: 12px;
+            }
+
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+
+            .logo h1 {
+                font-size: 1.1rem;
+            }
+
+            .logo span {
+                font-size: 0.75rem;
+            }
+
+            .mode-btn {
+                font-size: 0.8rem;
+                padding: 12px 8px;
+            }
+
+            .btn-sm {
+                font-size: 0.75rem;
+                padding: 8px 10px;
+            }
+
+            .file-icon {
+                width: 32px;
+                height: 32px;
+                min-width: 32px;
+            }
+
+            .file-list-container {
+                max-height: 250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon"><i class="fab fa-google-drive"></i></div>
+                <div>
+                    <h1>Drive Transfer</h1>
+                    <span>Ownership Management Tool</span>
+                </div>
+            </div>
+            <div class="user-info">
+                <span class="user-dot"></span>
+                <span id="userEmail">Loading...</span>
+            </div>
+        </header>
+
+        <!-- Main Form -->
+        <div id="mainSection">
+            <!-- Receiver Email -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-envelope"></i>
+                    <h2>Receiver Details</h2>
+                </div>
+
+                <div class="input-group">
+                    <label>Receiver Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="email" id="receiverEmail" placeholder="Enter receiver's email address">
+                    </div>
+                </div>
+
+                <!-- Mode Toggle -->
+                <div class="mode-toggle">
+                    <button class="mode-btn active" data-mode="share" onclick="setMode('share')">
+                        <i class="fas fa-share-alt"></i> Share Mode (Gmail)
+                    </button>
+                    <button class="mode-btn" data-mode="transfer" onclick="setMode('transfer')">
+                        <i class="fas fa-exchange-alt"></i> Transfer Ownership (Workspace)
+                    </button>
+                </div>
+            </div>
+
+            <!-- File Selection -->
+            <div class="card">
+                <div class="file-list-header">
+                    <h3><i class="fas fa-folder-open"></i> Select Files & Folders</h3>
+                    <div class="file-list-actions">
+                        <button class="btn-sm" onclick="selectAll()"><i class="fas fa-check-double"></i> Select
+                            All</button>
+                        <button class="btn-sm" onclick="loadFiles()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    </div>
+                </div>
+
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search files..." oninput="filterFiles()">
+                </div>
+
+                <div class="file-list-container">
+                    <div id="fileList">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p style="margin-top: 16px; color: rgba(255,255,255,0.6);">Loading your files...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="selection-summary">
+                    <span><span class="selection-count" id="selectedCount">0</span> items selected</span>
+                </div>
+            </div>
+
+            <!-- Transfer Button -->
+            <button class="btn-transfer" id="transferBtn" onclick="startTransfer()" disabled>
+                <i class="fas fa-paper-plane"></i>
+                <span>Send Files</span>
+            </button>
+        </div>
+
+        <!-- Progress Section -->
+        <div id="progressSection" class="progress-section card">
+            <div class="card-header">
+                <i class="fas fa-tasks"></i>
+                <h2>Transfer Progress</h2>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span id="progressText">Transferring...</span>
+                <span id="progressPercent">0%</span>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="transfer-log" id="transferLog"></div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="results-section card">
+            <div class="results-icon success">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Transfer Complete!</h2>
+            <p style="color: rgba(255,255,255,0.6); margin-top: 8px;" id="resultsSummary"></p>
+
+            <div class="results-stats">
+                <div class="stat success">
+                    <div class="stat-value" id="successCount">0</div>
+                    <div class="stat-label">Successful</div>
+                </div>
+                <div class="stat error">
+                    <div class="stat-value" id="failedCount">0</div>
+                    <div class="stat-label">Failed</div>
+                </div>
+            </div>
+
+            <button class="btn-transfer" onclick="resetApp()">
+                <i class="fas fa-redo"></i> New Transfer
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-note">
+            ⚠️ Note: Ownership transfer only works within Google Workspace domains. Use Share Mode for personal Gmail
+            accounts.
+        </div>
+    </div>
+
+    <script>
+        let allFiles = [];
+        let selectedFiles = new Set();
+        let shareMode = true;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            loadCurrentUser();
+            loadFiles();
+        });
+
+        function loadCurrentUser() {
+            google.script.run
+                .withSuccessHandler(function (email) {
+                    document.getElementById('userEmail').textContent = email || 'Not logged in';
+                })
+                .getCurrentUser();
+        }
+
+        function loadFiles() {
+            document.getElementById('fileList').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p style="margin-top: 16px; color: rgba(255,255,255,0.6);">Loading your files...</p>
+        </div>
+      `;
+
+            google.script.run
+                .withSuccessHandler(function (files) {
+                    allFiles = files || [];
+                    renderFiles(allFiles);
+                })
+                .withFailureHandler(function (error) {
+                    document.getElementById('fileList').innerHTML = `
+            <div class="loading">
+              <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #ea4335;"></i>
+              <p style="margin-top: 16px;">Error loading files: ${error.message}</p>
+            </div>
+          `;
+                })
+                .getMyFilesAndFolders();
+        }
+
+        function renderFiles(files) {
+            if (files.length === 0) {
+                document.getElementById('fileList').innerHTML = `
+          <div class="loading">
+            <i class="fas fa-folder-open" style="font-size: 48px; color: rgba(255,255,255,0.3);"></i>
+            <p style="margin-top: 16px;">No files found</p>
+          </div>
+        `;
+                return;
+            }
+
+            const html = files.map(file => {
+                const iconClass = getIconClass(file.mimeType);
+                const iconSymbol = getIcon(file.mimeType);
+                const isSelected = selectedFiles.has(file.id);
+
+                return `
+          <div class="file-item ${isSelected ? 'selected' : ''}" data-id="${file.id}" onclick="toggleFile('${file.id}')">
+            <div class="file-checkbox"></div>
+            <div class="file-icon ${iconClass}"><i class="${iconSymbol}"></i></div>
+            <div class="file-info">
+              <div class="file-name">${escapeHtml(file.name)}</div>
+              <div class="file-meta">${file.type === 'folder' ? 'Folder' : formatSize(file.size)}</div>
+            </div>
+          </div>
+        `;
+            }).join('');
+
+            document.getElementById('fileList').innerHTML = html;
+        }
+
+        function getIconClass(mimeType) {
+            if (mimeType.includes('folder')) return 'folder';
+            if (mimeType.includes('document') || mimeType.includes('word')) return 'document';
+            if (mimeType.includes('spreadsheet') || mimeType.includes('sheet')) return 'spreadsheet';
+            if (mimeType.includes('image')) return 'image';
+            return 'other';
+        }
+
+        function getIcon(mimeType) {
+            if (mimeType.includes('folder')) return 'fas fa-folder';
+            if (mimeType.includes('document')) return 'fas fa-file-word';
+            if (mimeType.includes('spreadsheet') || mimeType.includes('sheet')) return 'fas fa-file-excel';
+            if (mimeType.includes('image')) return 'fas fa-file-image';
+            if (mimeType.includes('pdf')) return 'fas fa-file-pdf';
+            return 'fas fa-file';
+        }
+
+        function toggleFile(id) {
+            if (selectedFiles.has(id)) {
+                selectedFiles.delete(id);
+            } else {
+                selectedFiles.add(id);
+            }
+            updateSelection();
+            renderFiles(getFilteredFiles());
+        }
+
+        function selectAll() {
+            const filtered = getFilteredFiles();
+            if (selectedFiles.size === filtered.length) {
+                selectedFiles.clear();
+            } else {
+                filtered.forEach(f => selectedFiles.add(f.id));
+            }
+            updateSelection();
+            renderFiles(filtered);
+        }
+
+        function getFilteredFiles() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            if (!search) return allFiles;
+            return allFiles.filter(f => f.name.toLowerCase().includes(search));
+        }
+
+        function filterFiles() {
+            renderFiles(getFilteredFiles());
+        }
+
+        function updateSelection() {
+            document.getElementById('selectedCount').textContent = selectedFiles.size;
+            const email = document.getElementById('receiverEmail').value.trim();
+            document.getElementById('transferBtn').disabled = !(selectedFiles.size > 0 && email.includes('@'));
+        }
+
+        function setMode(mode) {
+            shareMode = (mode === 'share');
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+        }
+
+        document.getElementById('receiverEmail').addEventListener('input', updateSelection);
+
+        function startTransfer() {
+            const receiver = document.getElementById('receiverEmail').value.trim();
+            if (!receiver || selectedFiles.size === 0) return;
+
+            document.getElementById('mainSection').style.display = 'none';
+            document.getElementById('progressSection').classList.add('active');
+
+            const log = document.getElementById('transferLog');
+            log.innerHTML = `<div class="log-entry log-info">🚀 Starting transfer to ${receiver}...</div>`;
+            log.innerHTML += `<div class="log-entry log-info">📌 Mode: ${shareMode ? 'Share (Edit Access)' : 'Transfer Ownership'}</div>`;
+            log.innerHTML += `<div class="log-entry log-info">📊 Items selected: ${selectedFiles.size}</div>`;
+            log.innerHTML += `<div class="log-entry log-info">────────────────────────────</div>`;
+
+            const itemIds = Array.from(selectedFiles);
+
+            google.script.run
+                .withSuccessHandler(function (results) {
+                    showResults(results, receiver);
+                })
+                .withFailureHandler(function (error) {
+                    log.innerHTML += `<div class="log-entry log-error">❌ Error: ${error.message}</div>`;
+                })
+                .transferItems(itemIds, receiver, shareMode);
+        }
+
+        function showResults(results, receiver) {
+            document.getElementById('progressSection').classList.remove('active');
+            document.getElementById('resultsSection').classList.add('active');
+
+            document.getElementById('successCount').textContent = results.success.length;
+            document.getElementById('failedCount').textContent = results.failed.length;
+            document.getElementById('resultsSummary').textContent =
+                `Transferred ${results.success.length} items to ${receiver}`;
+        }
+
+        function resetApp() {
+            selectedFiles.clear();
+            document.getElementById('receiverEmail').value = '';
+            document.getElementById('resultsSection').classList.remove('active');
+            document.getElementById('mainSection').style.display = 'block';
+            updateSelection();
+            loadFiles();
+        }
+
+        function formatSize(bytes) {
+            if (!bytes || bytes === '-') return '-';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+
+</html>
