@@ -7,12 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
@@ -21,8 +16,6 @@
             display: flex;
             flex-direction: column;
         }
-
-        /* Header */
         .header {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(16px);
@@ -32,21 +25,8 @@
             justify-content: space-between;
             align-items: center;
         }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #38bdf8;
-        }
-
-        .logo i {
-            font-size: 1.6rem;
-            color: #4285f4;
-        }
-
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.25rem; font-weight: 700; color: #38bdf8; }
+        .logo i { font-size: 1.6rem; color: #4285f4; }
         .user-pill {
             background: rgba(255, 255, 255, 0.08);
             padding: 8px 16px;
@@ -57,17 +37,7 @@
             align-items: center;
             gap: 8px;
         }
-
-        /* Container */
-        .container {
-            max-width: 1200px;
-            width: 100%;
-            margin: 32px auto;
-            padding: 0 24px;
-            flex: 1;
-        }
-
-        /* Login Screen */
+        .container { max-width: 1200px; width: 100%; margin: 32px auto; padding: 0 24px; flex: 1; }
         .login-box {
             background: rgba(30, 41, 59, 0.6);
             backdrop-filter: blur(20px);
@@ -79,7 +49,6 @@
             text-align: center;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-
         .google-login-btn {
             background: white;
             color: #1e293b;
@@ -97,196 +66,53 @@
             width: 100%;
             justify-content: center;
         }
-
-        .google-login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-
-        /* Main Workspace Layout */
-        .workspace {
-            display: grid;
-            grid-template-columns: 1fr 360px;
-            gap: 24px;
-        }
-
-        .card {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 24px;
-        }
-
-        /* Breadcrumb Navigation */
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            color: #94a3b8;
-            margin-bottom: 20px;
-            background: rgba(15, 23, 42, 0.4);
-            padding: 10px 16px;
-            border-radius: 10px;
-        }
-
-        .breadcrumb-item {
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .breadcrumb-item:hover {
-            color: #38bdf8;
-        }
-
-        /* Table View */
-        .file-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-
-        .file-table th {
-            text-align: left;
-            padding: 12px;
-            color: #94a3b8;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .file-table td {
-            padding: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .file-row {
-            transition: background 0.2s;
-            cursor: pointer;
-        }
-
-        .file-row:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .file-name {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 500;
-        }
-
+        .google-login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .workspace { display: grid; grid-template-columns: 1fr 360px; gap: 24px; }
+        .card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 24px; }
+        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #94a3b8; margin-bottom: 20px; background: rgba(15, 23, 42, 0.4); padding: 10px 16px; border-radius: 10px; }
+        .breadcrumb-item { cursor: pointer; transition: color 0.2s; }
+        .breadcrumb-item:hover { color: #38bdf8; }
+        .file-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .file-table th { text-align: left; padding: 12px; color: #94a3b8; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .file-table td { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .file-row { transition: background 0.2s; cursor: pointer; }
+        .file-row:hover { background: rgba(255, 255, 255, 0.05); }
+        .file-name { display: flex; align-items: center; gap: 12px; font-weight: 500; }
         .icon-folder { color: #f59e0b; }
         .icon-file { color: #3b82f6; }
-
-        /* Transfer Panel */
-        .recipient-box {
-            background: rgba(56, 189, 248, 0.1);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-        }
-
-        .recipient-title {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #38bdf8;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .recipient-email {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #f8fafc;
-        }
-
+        .recipient-box { background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); padding: 16px; border-radius: 12px; margin-bottom: 24px; }
+        .recipient-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #38bdf8; font-weight: 700; margin-bottom: 4px; }
+        .recipient-email { font-size: 1rem; font-weight: 600; color: #f8fafc; }
         .btn-transfer {
             background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 16px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4); display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-
-        .btn-transfer:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
-        }
-
-        .btn-transfer:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        /* Status Alert */
-        .status-alert {
-            margin-top: 20px;
-            padding: 16px;
-            border-radius: 12px;
-            display: none;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .status-success {
-            background: rgba(34, 197, 94, 0.15);
-            border: 1px solid rgba(34, 197, 94, 0.4);
-            color: #4ade80;
-        }
-
-        .status-error {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            color: #f87171;
-        }
+        .btn-transfer:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6); }
+        .btn-transfer:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+        .status-alert { margin-top: 20px; padding: 16px; border-radius: 12px; display: none; font-size: 0.9rem; line-height: 1.5; }
+        .status-success { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.4); color: #4ade80; }
+        .status-error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; }
     </style>
 </head>
 <body>
-
     <header class="header">
-        <div class="logo">
-            <i class="fab fa-google-drive"></i>
-            <span>Drive Transfer Portal</span>
-        </div>
-        <div id="userPill" class="user-pill" style="display: none;">
-            <i class="fas fa-user-circle"></i>
-            <span id="userEmailDisplay">User</span>
-        </div>
+        <div class="logo"><i class="fab fa-google-drive"></i> <span>Drive Transfer Portal</span></div>
+        <div id="userPill" class="user-pill" style="display: none;"><i class="fas fa-user-circle"></i> <span id="userEmailDisplay">User</span></div>
     </header>
-
     <div class="container">
-        <!-- LOGIN SECTION -->
         <div id="loginSection" class="login-box">
             <i class="fab fa-google-drive" style="font-size: 64px; color: #38bdf8; margin-bottom: 20px;"></i>
             <h2>Google Drive Transfer</h2>
             <p style="color: #94a3b8; margin-top: 8px;">Select your files and transfer ownership directly to the corporate Shared Drive staging email.</p>
             <button class="google-login-btn" onclick="loginWithGoogle()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20" alt="Google">
-                Sign in with Google
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20" alt="Google"> Sign in with Google
             </button>
         </div>
-
-        <!-- MAIN APP SECTION -->
         <div id="appSection" class="workspace" style="display: none;">
-            <!-- File Explorer -->
             <div class="card">
                 <div class="breadcrumb" id="breadcrumbNav">
                     <span class="breadcrumb-item" onclick="navigateToFolder('root', 'My Drive')"><i class="fas fa-home"></i> My Drive</span>
                 </div>
-
                 <div style="overflow-x: auto;">
                     <table class="file-table">
                         <thead>
@@ -297,48 +123,32 @@
                             </tr>
                         </thead>
                         <tbody id="fileTableBody">
-                            <tr>
-                                <td colspan="3" style="text-align: center; padding: 40px; color: #94a3b8;">
-                                    <i class="fas fa-spinner fa-spin fa-2x"></i>
-                                    <p style="margin-top: 10px;">Loading Drive files...</p>
-                                </td>
-                            </tr>
+                            <tr><td colspan="3" style="text-align: center; padding: 40px; color: #94a3b8;"><i class="fas fa-spinner fa-spin fa-2x"></i><p style="margin-top: 10px;">Loading Drive files...</p></td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-
-            <!-- Transfer Side Bar -->
             <div class="card" style="height: fit-content;">
                 <h3 style="margin-bottom: 16px;">Transfer Destination</h3>
-                
                 <div class="recipient-box">
                     <div class="recipient-title"><i class="fas fa-lock"></i> Fixed Target Recipient</div>
                     <div class="recipient-email" id="targetEmailDisplay">cisinn.shared@gmail.com</div>
                 </div>
-
                 <div style="margin-bottom: 20px; font-size: 0.9rem; color: #94a3b8;">
                     Selected Items: <strong id="selectedCountText" style="color: #38bdf8;">0</strong>
                 </div>
-
                 <button id="transferBtn" class="btn-transfer" onclick="executeTransfer()" disabled>
                     <i class="fas fa-paper-plane"></i> Send Ownership Request
                 </button>
-
                 <div id="statusAlert" class="status-alert"></div>
             </div>
         </div>
     </div>
-
-    <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-
     <script>
-        // CONFIGURATION
         const CLIENT_ID = '316518188310-ope33gher5kase39qfnqpca4tc3p5cta.apps.googleusercontent.com';
         const TARGET_EMAIL = 'cisinn.shared@gmail.com';
         const SCOPES = 'https://www.googleapis.com/auth/drive';
-
         let accessToken = null;
         let currentFolderId = 'root';
         let folderHistory = [{ id: 'root', name: 'My Drive' }];
@@ -365,122 +175,58 @@
 
         async function fetchUserInfo() {
             try {
-                const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
+                const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', { headers: { 'Authorization': `Bearer ${accessToken}` } });
                 const data = await res.json();
-                if (data.email) {
-                    document.getElementById('userEmailDisplay').innerText = data.email;
-                }
-            } catch (e) {
-                console.error("Failed to fetch user info", e);
-            }
+                if (data.email) document.getElementById('userEmailDisplay').innerText = data.email;
+            } catch (e) { console.error("Failed to fetch user info", e); }
         }
 
         async function loadFolderContents(folderId) {
-            currentFolderId = folderId;
-            selectedFileIds.clear();
-            updateSelectedUI();
-
+            currentFolderId = folderId; selectedFileIds.clear(); updateSelectedUI();
             const tbody = document.getElementById('fileTableBody');
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="3" style="text-align: center; padding: 40px; color: #94a3b8;">
-                        <i class="fas fa-spinner fa-spin fa-2x"></i>
-                        <p style="margin-top: 10px;">Loading folder items...</p>
-                    </td>
-                </tr>
-            `;
-
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 40px; color: #94a3b8;"><i class="fas fa-spinner fa-spin fa-2x"></i><p style="margin-top: 10px;">Loading folder items...</p></td></tr>`;
             try {
                 const query = `'${folderId}' in parents and trashed = false`;
-                const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id,name,mimeType)&pageSize=100`, {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
+                const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id,name,mimeType)&pageSize=100`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
                 const data = await res.json();
-                currentFiles = data.files || [];
-
-                renderFilesTable();
-            } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="3" style="color: #f87171; text-align: center; padding: 20px;">Error: ${err.message}</td></tr>`;
-            }
+                currentFiles = data.files || []; renderFilesTable();
+            } catch (err) { tbody.innerHTML = `<tr><td colspan="3" style="color: #f87171; text-align: center; padding: 20px;">Error: ${err.message}</td></tr>`; }
         }
 
         function renderFilesTable() {
             const tbody = document.getElementById('fileTableBody');
-            if (currentFiles.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 30px; color: #94a3b8;">Folder is empty.</td></tr>`;
-                return;
-            }
-
+            if (currentFiles.length === 0) { tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 30px; color: #94a3b8;">Folder is empty.</td></tr>`; return; }
             tbody.innerHTML = currentFiles.map(file => {
                 const isFolder = file.mimeType === 'application/vnd.google-apps.folder';
                 const iconClass = isFolder ? 'fas fa-folder icon-folder' : 'fas fa-file-alt icon-file';
-                
-                return `
-                    <tr class="file-row">
-                        <td><input type="checkbox" value="${file.id}" onclick="event.stopPropagation(); toggleFileSelect('${file.id}')" id="cb-${file.id}"></td>
-                        <td onclick="${isFolder ? `enterFolder('${file.id}', '${escapeHtml(file.name)}')` : `toggleFileSelect('${file.id}')`}">
-                            <div class="file-name">
-                                <i class="${iconClass}"></i>
-                                <span>${escapeHtml(file.name)}</span>
-                            </div>
-                        </td>
-                        <td>${isFolder ? 'Folder' : 'File'}</td>
-                    </tr>
-                `;
+                return `<tr class="file-row"><td><input type="checkbox" value="${file.id}" onclick="event.stopPropagation(); toggleFileSelect('${file.id}')" id="cb-${file.id}"></td><td onclick="${isFolder ? `enterFolder('${file.id}', '${escapeHtml(file.name)}')` : `toggleFileSelect('${file.id}')`}"><div class="file-name"><i class="${iconClass}"></i><span>${escapeHtml(file.name)}</span></div></td><td>${isFolder ? 'Folder' : 'File'}</td></tr>`;
             }).join('');
         }
 
-        function enterFolder(id, name) {
-            folderHistory.push({ id, name });
-            updateBreadcrumb();
-            loadFolderContents(id);
-        }
-
+        function enterFolder(id, name) { folderHistory.push({ id, name }); updateBreadcrumb(); loadFolderContents(id); }
         function navigateToFolder(id, name) {
             const index = folderHistory.findIndex(item => item.id === id);
-            if (index !== -1) {
-                folderHistory = folderHistory.slice(0, index + 1);
-            } else {
-                folderHistory = [{ id: 'root', name: 'My Drive' }];
-            }
-            updateBreadcrumb();
-            loadFolderContents(id);
+            if (index !== -1) folderHistory = folderHistory.slice(0, index + 1);
+            else folderHistory = [{ id: 'root', name: 'My Drive' }];
+            updateBreadcrumb(); loadFolderContents(id);
         }
-
         function updateBreadcrumb() {
             const nav = document.getElementById('breadcrumbNav');
-            nav.innerHTML = folderHistory.map((item, index) => `
-                <span class="breadcrumb-item" onclick="navigateToFolder('${item.id}', '${escapeHtml(item.name)}')">
-                    ${index === 0 ? '<i class="fas fa-home"></i> ' : ''}${escapeHtml(item.name)}
-                </span>
-                ${index < folderHistory.length - 1 ? '<span>/</span>' : ''}
-            `).join('');
+            nav.innerHTML = folderHistory.map((item, index) => `<span class="breadcrumb-item" onclick="navigateToFolder('${item.id}', '${escapeHtml(item.name)}')">${index === 0 ? '<i class="fas fa-home"></i> ' : ''}${escapeHtml(item.name)}</span>${index < folderHistory.length - 1 ? '<span>/</span>' : ''}`).join('');
         }
 
         function toggleFileSelect(id) {
             const cb = document.getElementById(`cb-${id}`);
-            if (selectedFileIds.has(id)) {
-                selectedFileIds.delete(id);
-                if (cb) cb.checked = false;
-            } else {
-                selectedFileIds.add(id);
-                if (cb) cb.checked = true;
-            }
+            if (selectedFileIds.has(id)) { selectedFileIds.delete(id); if (cb) cb.checked = false; }
+            else { selectedFileIds.add(id); if (cb) cb.checked = true; }
             updateSelectedUI();
         }
 
         function toggleSelectAll(masterCb) {
             currentFiles.forEach(file => {
                 const cb = document.getElementById(`cb-${file.id}`);
-                if (masterCb.checked) {
-                    selectedFileIds.add(file.id);
-                    if (cb) cb.checked = true;
-                } else {
-                    selectedFileIds.delete(file.id);
-                    if (cb) cb.checked = false;
-                }
+                if (masterCb.checked) { selectedFileIds.add(file.id); if (cb) cb.checked = true; }
+                else { selectedFileIds.delete(file.id); if (cb) cb.checked = false; }
             });
             updateSelectedUI();
         }
@@ -491,44 +237,69 @@
             document.getElementById('transferBtn').disabled = count === 0;
         }
 
+        async function processSingleItem(fileId) {
+            // Attempt 1: Try adding permission w/ pendingOwner: true
+            let res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions?sendNotificationEmail=true`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    role: 'writer',
+                    type: 'user',
+                    pendingOwner: true,
+                    emailAddress: TARGET_EMAIL
+                })
+            });
+
+            if (res.ok) return { success: true };
+
+            let errData = await res.json();
+            console.warn("Attempt 1 (pendingOwner) failed:", errData);
+
+            // Attempt 2: Fallback to standard Writer permission
+            res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions?sendNotificationEmail=true`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    role: 'writer',
+                    type: 'user',
+                    emailAddress: TARGET_EMAIL
+                })
+            });
+
+            if (res.ok) return { success: true };
+
+            let errData2 = await res.json();
+            const errorMsg = (errData2.error && errData2.error.message) ? errData2.error.message : ((errData.error && errData.error.message) ? errData.error.message : 'Permission denied');
+            return { success: false, error: errorMsg };
+        }
+
         async function executeTransfer() {
             const btn = document.getElementById('transferBtn');
             const alertBox = document.getElementById('statusAlert');
             
             btn.disabled = true;
-            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Sending Request...`;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
             
             alertBox.style.display = 'block';
             alertBox.className = 'status-alert status-success';
-            alertBox.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing ${selectedFileIds.size} item(s)...`;
+            alertBox.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Sending ownership request for ${selectedFileIds.size} item(s)...`;
 
             const fileIds = Array.from(selectedFileIds);
             let successCount = 0;
+            let lastError = "";
 
             for (const fileId of fileIds) {
-                try {
-                    // Step 4: Create Pending Owner permission to target email
-                    const permBody = {
-                        role: 'writer',
-                        type: 'user',
-                        pendingOwner: true,
-                        emailAddress: TARGET_EMAIL
-                    };
-
-                    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions?sendNotificationEmail=true`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${accessToken}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(permBody)
-                    });
-
-                    if (res.ok) {
-                        successCount++;
-                    }
-                } catch (e) {
-                    console.error("Transfer failed for fileId:", fileId, e);
+                const result = await processSingleItem(fileId);
+                if (result.success) {
+                    successCount++;
+                } else {
+                    lastError = result.error;
                 }
             }
 
@@ -537,18 +308,16 @@
 
             if (successCount > 0) {
                 alertBox.className = 'status-alert status-success';
-                alertBox.innerHTML = `<i class="fas fa-check-circle"></i> <strong>Request Sent Successfully!</strong><br>Ownership transfer request for ${successCount} item(s) has been sent to <strong>${TARGET_EMAIL}</strong>.`;
+                alertBox.innerHTML = `<i class="fas fa-check-circle"></i> <strong>Request Sent Successfully!</strong><br>Ownership request for ${successCount} item(s) sent to <strong>${TARGET_EMAIL}</strong>.`;
                 selectedFileIds.clear();
                 updateSelectedUI();
             } else {
                 alertBox.className = 'status-alert status-error';
-                alertBox.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Failed to send request. Please check permissions.`;
+                alertBox.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <strong>Failed:</strong> ${escapeHtml(lastError)}`;
             }
         }
 
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
+        function escapeHtml(str) { return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;") : ""; }
     </script>
 </body>
 </html>
