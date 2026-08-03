@@ -89,14 +89,14 @@
         }
         .btn-transfer:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6); }
         .btn-transfer:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
-        .status-alert { margin-top: 20px; padding: 16px; border-radius: 12px; display: none; font-size: 0.9rem; line-height: 1.5; }
+        .status-alert { margin-top: 20px; padding: 16px; border-radius: 12px; display: none; font-size: 0.9rem; line-height: 1.5; word-break: break-word; }
         .status-success { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.4); color: #4ade80; }
         .status-error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; }
     </style>
 </head>
 <body>
     <header class="header">
-        <div class="logo"><i class="fab fa-google-drive"></i> <span>Drive Transfer Portal</span></div>
+        <div class="logo"><i class="fab fa-google-drive"></i> <span>Drive Transfer Portal v2.0</span></div>
         <div id="userPill" class="user-pill" style="display: none;"><i class="fas fa-user-circle"></i> <span id="userEmailDisplay">User</span></div>
     </header>
     <div class="container">
@@ -187,7 +187,7 @@
             tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 40px; color: #94a3b8;"><i class="fas fa-spinner fa-spin fa-2x"></i><p style="margin-top: 10px;">Loading folder items...</p></td></tr>`;
             try {
                 const query = `'${folderId}' in parents and trashed = false`;
-                const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id,name,mimeType)&pageSize=100`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&supportsAllDrives=true&includeItemsFromAllDrives=true&fields=files(id,name,mimeType)&pageSize=100`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
                 const data = await res.json();
                 currentFiles = data.files || []; renderFilesTable();
             } catch (err) { tbody.innerHTML = `<tr><td colspan="3" style="color: #f87171; text-align: center; padding: 20px;">Error: ${err.message}</td></tr>`; }
@@ -238,8 +238,9 @@
         }
 
         async function processSingleItem(fileId) {
-            // Attempt 1: Try adding permission w/ pendingOwner: true
-            let res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions?sendNotificationEmail=true`, {
+            // Attempt 1: Try adding permission w/ pendingOwner: true + supportsAllDrives=true
+            let url1 = `https://www.googleapis.com/drive/v3/files/${fileId}/permissions?supportsAllDrives=true&sendNotificationEmail=true`;
+            let res = await fetch(url1, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -255,11 +256,11 @@
 
             if (res.ok) return { success: true };
 
-            let errData = await res.json();
+            let errData = await res.json().catch(() => ({}));
             console.warn("Attempt 1 (pendingOwner) failed:", errData);
 
             // Attempt 2: Fallback to standard Writer permission
-            res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions?sendNotificationEmail=true`, {
+            let res2 = await fetch(url1, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -272,11 +273,16 @@
                 })
             });
 
-            if (res.ok) return { success: true };
+            if (res2.ok) return { success: true };
 
-            let errData2 = await res.json();
-            const errorMsg = (errData2.error && errData2.error.message) ? errData2.error.message : ((errData.error && errData.error.message) ? errData.error.message : 'Permission denied');
-            return { success: false, error: errorMsg };
+            let errData2 = await res2.json().catch(() => ({}));
+            console.warn("Attempt 2 (writer) failed:", errData2);
+
+            let msg = "Permission denied";
+            if (errData2.error && errData2.error.message) msg = errData2.error.message;
+            else if (errData.error && errData.error.message) msg = errData.error.message;
+
+            return { success: false, error: msg };
         }
 
         async function executeTransfer() {
@@ -288,7 +294,7 @@
             
             alertBox.style.display = 'block';
             alertBox.className = 'status-alert status-success';
-            alertBox.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Sending ownership request for ${selectedFileIds.size} item(s)...`;
+            alertBox.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Sending request for ${selectedFileIds.size} item(s)...`;
 
             const fileIds = Array.from(selectedFileIds);
             let successCount = 0;
@@ -313,7 +319,7 @@
                 updateSelectedUI();
             } else {
                 alertBox.className = 'status-alert status-error';
-                alertBox.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <strong>Failed:</strong> ${escapeHtml(lastError)}`;
+                alertBox.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <strong>Google API Error:</strong> ${escapeHtml(lastError)}`;
             }
         }
 
